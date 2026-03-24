@@ -14,6 +14,8 @@ cd taxscope
 npm install
 ```
 
+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
+
 ---
 
 ## Step 2 — Push to GitHub (~2 min)
