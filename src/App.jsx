@@ -594,7 +594,9 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
       {/* Sticky close header */}
       <div style={{position:'sticky',top:0,zIndex:10,background:'var(--white)',borderBottom:'1px solid var(--border)',padding:'.875rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.5rem'}}>
         <div style={{fontWeight:800,fontSize:'1rem',display:'flex',alignItems:'center',gap:6}}><Target size={16} style={{color:'var(--coral)'}}/>Your Full Tax Estimate</div>
-        <button onClick={onClose} aria-label="Close" style={{width:32,height:32,borderRadius:'50%',background:'var(--bg)',border:'1.5px solid var(--border)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.1rem',color:'var(--ink2)',transition:'all .15s',flexShrink:0,lineHeight:1}} onMouseEnter={e=>{e.currentTarget.style.background='var(--ink)';e.currentTarget.style.color='white';e.currentTarget.style.borderColor='var(--ink)';}} onMouseLeave={e=>{e.currentTarget.style.background='var(--bg)';e.currentTarget.style.color='var(--ink2)';e.currentTarget.style.borderColor='var(--border)';}}>×</button>
+        <button onClick={onClose} aria-label="Close" style={{width:32,height:32,borderRadius:'50%',background:'var(--bg)',border:'1.5px solid var(--border)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'all .15s',flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background='var(--ink)';e.currentTarget.style.color='white';e.currentTarget.style.borderColor='var(--ink)';e.currentTarget.querySelector('svg').style.stroke='white';}} onMouseLeave={e=>{e.currentTarget.style.background='var(--bg)';e.currentTarget.style.borderColor='var(--border)';e.currentTarget.querySelector('svg').style.stroke='var(--ink2)';}}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
       <div style={{textAlign:'center',padding:'1.25rem',background:isR?'#F0FDF4':isO&&amt>1500?'#FEF2F2':'#FEFCE8',borderRadius:'var(--r-xl)',marginBottom:'1.25rem',border:`1.5px solid ${isR?'#86EFAC':isO&&amt>1500?'#FECACA':'#FDE68A'}`}}>
         <div style={{fontSize:'.64rem',fontWeight:700,color:mainC,textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>{isR?'Estimated Refund 🎉':isO?'Estimated Balance Due':'≈ Break Even'}</div>
@@ -607,7 +609,31 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:'1rem',marginBottom:'1.25rem'}}>
         <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Income flow</div><ResponsiveContainer width="100%" height={130}><BarChart data={chartD} margin={{top:0,right:0,left:0,bottom:0}}><XAxis dataKey="n" tick={{fontSize:10,fill:'#ADA59B',fontFamily:'Plus Jakarta Sans'}} axisLine={false} tickLine={false}/><YAxis hide/><Tooltip formatter={v=>[fm(v),'Amount']} contentStyle={{fontFamily:'Plus Jakarta Sans',borderRadius:8,border:'1px solid var(--border)',fontSize:'.77rem'}}/><Bar dataKey="v" radius={[4,4,0,0]}>{chartD.map((e,i)=><Cell key={i} fill={e.c}/>)}</Bar></BarChart></ResponsiveContainer></div>
-        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Tax breakdown</div>{[['Federal Tax',fm(calc.nF),'#EF4444'],NT.has(data.st)?['State Tax','$0 🎉','#14803D']:['State Tax',fm(calc.stT),'#EF4444'],calc.seTax>0?['SE Tax',fm(calc.seTax),'#F59E0B']:null,calc.uC>0?['Credits',`−${fm(calc.uC)}`,'#14803D']:null,null,['Total Tax',fm(calc.tot),'var(--ink)',true],calc.paid>0?['Paid Already',`−${fm(calc.paid)}`,'#14803D']:null].map((r,i)=>r===null?<div key={i} style={{height:1,background:'var(--border)',margin:'5px 0'}}/>:r?<div key={i} style={{display:'flex',justifyContent:'space-between',padding:'3px 0',fontSize:'.78rem'}}><span style={{color:'var(--ink2)'}}>{r[0]}</span><span style={{fontWeight:r[3]?700:500,fontFamily:r[3]?'var(--fs)':undefined,color:r[2]}}>{r[1]}</span></div>:null)}<div style={{marginTop:8,paddingTop:8,borderTop:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:'.69rem',color:'var(--ink3)'}}>Complexity</span><Chip color={cx.color} bg={cx.bg}>{cx.label}</Chip></div></div>
+        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Tax breakdown</div>{(()=>{
+  const rows=[
+    ['Federal Tax',fm(calc.nF),'#EF4444'],
+    NT.has(data.st)?['State Tax','$0 🎉','#14803D']:['State Tax',fm(calc.stT),'#EF4444'],
+    calc.seTax>0?['SE Tax',fm(calc.seTax),'#F59E0B']:null,
+    calc.uC>0?['Credits',`−${fm(calc.uC)}`,'#14803D']:null,
+  ].filter(Boolean);
+  return(<>
+    {rows.map((r,i)=>(
+      <div key={i} style={{display:'flex',justifyContent:'space-between',padding:'5px 0',fontSize:'.78rem'}}>
+        <span style={{color:'var(--ink2)'}}>{r[0]}</span>
+        <span style={{fontWeight:500,color:r[2]}}>{r[1]}</span>
+      </div>
+    ))}
+    <div style={{display:'flex',justifyContent:'space-between',padding:'6px 0 5px',fontSize:'.78rem',borderTop:'1px solid var(--border)',marginTop:4}}>
+      <span style={{color:'var(--ink2)'}}>Total Tax</span>
+      <span style={{fontWeight:700,fontFamily:'var(--fs)',color:'var(--ink)'}}>{fm(calc.tot)}</span>
+    </div>
+    {calc.paid>0&&<div style={{display:'flex',justifyContent:'space-between',padding:'5px 0',fontSize:'.78rem'}}>
+      <span style={{color:'var(--ink2)'}}>Paid Already</span>
+      <span style={{fontWeight:500,color:'#14803D'}}>−{fm(calc.paid)}</span>
+    </div>}
+  </>);
+})()}
+<div style={{marginTop:8,paddingTop:7,borderTop:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:'.69rem',color:'var(--ink3)'}}>Complexity</span><Chip color={cx.color} bg={cx.bg}>{cx.label}</Chip></div></div>
       </div>
       <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1.25rem',marginBottom:'1rem'}}>
         <div style={{fontWeight:700,fontSize:'.875rem',marginBottom:3}}>How confident do you feel about filing?</div>
