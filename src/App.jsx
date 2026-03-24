@@ -619,20 +619,20 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
       </div>
       <div>
         {/* ── FILING SECTION CARD ── */}
-        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',border:'1.5px solid var(--border)',padding:'1.25rem',marginTop:'.25rem'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1.5px solid var(--border)'}}>
-          <div style={{width:32,height:32,borderRadius:'50%',background:'var(--coral)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Briefcase size={14} style={{color:'white',strokeWidth:2}}/></div>
+        <div style={{background:'linear-gradient(135deg,var(--teal-lt),var(--white))',borderRadius:'var(--r-xl)',border:'1.5px solid var(--teal)',padding:'1.25rem',marginTop:'.25rem',boxShadow:'0 0 0 4px rgba(11,122,109,.05)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1.5px solid rgba(11,122,109,.2)'}}>
+          <div style={{width:34,height:34,borderRadius:'50%',background:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 2px 8px rgba(11,122,109,.25)'}}><Briefcase size={15} style={{color:'white',strokeWidth:2}}/></div>
           <div>
-            <div style={{fontWeight:800,fontSize:'.95rem'}}>How do you want to file?</div>
-            <div style={{fontSize:'.72rem',color:'var(--ink3)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
+            <div style={{fontWeight:800,fontSize:'.95rem',color:'var(--teal)'}}>How do you want to file?</div>
+            <div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
           </div>
         </div>
         <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',marginBottom:'.625rem',lineHeight:1.6,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/><span><strong>About costs:</strong> These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></span></div>
         <div style={{display:'flex',flexDirection:'column',gap:7}}>
-          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--coral)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--coral-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(224,78,26,.08)':'var(--sh-xs)'}}><button onClick={()=>setOpenPath(openPath===p.id?null:p.id)} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--coral)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--coral)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
-          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid var(--coral-md)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:`1.5px solid ${i===0?'var(--coral)':'var(--border)'}`,transition:'all .14s',textDecoration:'none',color:'inherit'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor=i===0?'var(--coral)':'var(--border)';}}>
+          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>setOpenPath(openPath===p.id?null:p.id)} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
+          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(11,122,109,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='var(--border)';}}>
             <div style={{width:34,height:34,borderRadius:8,background:`${pr.c}15`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.15rem',flexShrink:0,border:`1px solid ${pr.c}22`,marginTop:1}}>{pr.em}</div>
-            <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={i===0?'var(--coral)':pr.c} bg={i===0?'var(--coral-lt)':`${pr.c}12`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid var(--coral-md)',paddingTop:4}}>{pr.detail}</div>}</div>
+            <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={pr.c} bg={`${pr.c}15`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid rgba(11,122,109,.2)',paddingTop:4}}>{pr.detail}</div>}</div>
             <div style={{textAlign:'right',flexShrink:0,paddingLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.78rem',whiteSpace:'nowrap'}}>{pr.price}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',marginTop:2,display:'flex',alignItems:'center',gap:2,justifyContent:'flex-end'}}><ArrowRight size={8}/>Visit</div></div>
           </a>))}</div></div>)}</div>
           </div>);})}
@@ -642,22 +642,22 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
 
         {/* 2026 PLANNING PANEL — standalone card */}
         {calc26&&calc.gross>0&&(
-          <div style={{background:'linear-gradient(135deg,#EFF6FF,#DBEAFE)',border:'1.5px solid #BFDBFE',borderRadius:'var(--r-xl)',padding:'1.25rem',marginTop:'1rem'}}>
-            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px solid #BFDBFE'}}>
-              <div style={{width:32,height:32,borderRadius:'50%',background:'#3B82F6',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                <TrendingUp size={14} style={{color:'white'}}/>
+          <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',padding:'1.25rem',marginTop:'1rem'}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px solid var(--border)'}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:'var(--border)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                <TrendingUp size={13} style={{color:'var(--ink2)'}}/>
               </div>
               <div>
-                <div style={{fontWeight:800,fontSize:'.95rem',color:'#1E3A8A'}}>Plan ahead for 2026</div>
-                <div style={{fontSize:'.72rem',color:'#3B82F6',marginTop:1}}>You're earning 2026 income right now — here's what changes.</div>
+                <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--ink2)'}}>Plan ahead for 2026</div>
+                <div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1}}>You're earning 2026 income right now — here's what changes.</div>
               </div>
             </div>
             {bigDiff&&(
               <div style={{background:'white',borderRadius:'var(--r)',padding:'10px 13px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
-                <div style={{fontSize:'.79rem',color:'#1E3A8A'}}><strong>With 2026 tax rules, your estimate would be:</strong></div>
-                <div style={{fontFamily:'var(--fs)',fontSize:'1.25rem',fontWeight:700,color:yearDiff<0?'#14803D':'#C71D1D',flexShrink:0}}>
+                <div style={{fontSize:'.79rem',color:'var(--ink2)'}}><strong>With 2026 tax rules, your estimate would be:</strong></div>
+                <div style={{fontFamily:'var(--fs)',fontSize:'1.25rem',fontWeight:700,color:yearDiff<0?'var(--teal)':'var(--red)',flexShrink:0}}>
                   {yearDiff<0?`${fm(Math.abs(calc26.res))} refund`:`${fm(Math.abs(calc26.res))} owed`}
-                  <span style={{fontSize:'.65rem',fontWeight:600,color:'#3B82F6',marginLeft:5}}>({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs 2025)</span>
+                  <span style={{fontSize:'.65rem',fontWeight:500,color:'var(--ink3)',marginLeft:5}}>({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs 2025)</span>
                 </div>
               </div>
             )}
@@ -666,8 +666,8 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
                 <div key={i} style={{background:'white',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start'}}>
                   <span style={{fontSize:'1rem',flexShrink:0,lineHeight:1.4}}>{c.icon}</span>
                   <div>
-                    <div style={{fontWeight:700,fontSize:'.79rem',color:'#1E40AF'}}>{c.title}</div>
-                    <div style={{fontSize:'.72rem',color:'#3B82F6',marginTop:1,lineHeight:1.5}}>{c.detail}</div>
+                    <div style={{fontWeight:600,fontSize:'.79rem',color:'var(--ink2)'}}>{c.title}</div>
+                    <div style={{fontSize:'.72rem',color:'var(--ink3)',marginTop:1,lineHeight:1.5}}>{c.detail}</div>
                   </div>
                 </div>
               ))}
@@ -681,7 +681,7 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
                 </div>
               )}
             </div>
-            <div style={{marginTop:10,fontSize:'.69rem',color:'#3B82F6',textAlign:'center',opacity:.8}}>
+            <div style={{marginTop:10,fontSize:'.69rem',color:'var(--ink3)',textAlign:'center'}}>
               Estimates only · 2026 rules: IRS Rev. Proc. 2025-32 · Files April 2027
             </div>
           </div>
@@ -794,10 +794,8 @@ export default function App(){
         <div style={{display:'flex',alignItems:'center',gap:6,fontWeight:800,fontSize:'.9375rem'}}>
           <Target size={17} style={{color:'var(--coral)'}}/>TaxScope
         </div>
-        <span style={{fontSize:'.65rem',color:'var(--ink3)',padding:'2px 8px',background:'var(--bg)',borderRadius:100,border:'1px solid var(--border)',whiteSpace:'nowrap',fontWeight:500}}>Free Tax Estimator</span>
-        <span style={{fontSize:'.62rem',color:'#1E40AF',padding:'2px 8px',background:'#EFF6FF',borderRadius:100,border:'1px solid #BFDBFE',whiteSpace:'nowrap',fontWeight:600,display:'flex',alignItems:'center',gap:3}}>
-          <TrendingUp size={9}/>Filing 2025 · Planning 2026
-        </span>
+        <span style={{fontSize:'.75rem',color:'var(--ink2)',fontWeight:600,whiteSpace:'nowrap'}}>Free Tax Estimator</span>
+
       </div>
       <div style={{display:'flex',alignItems:'center',gap:'.875rem'}}>
         
@@ -812,7 +810,7 @@ export default function App(){
           Will you get <em style={{color:'var(--coral)'}}>money back</em>,<br/>or owe more this year?
         </h1>
         <p className="fu d1" style={{fontSize:'.9rem',color:'var(--ink2)',maxWidth:440,margin:'0 auto 1.75rem',lineHeight:1.8}}>
-          Free, anonymous 2025 tax estimator — no signup, no sensitive data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
+          Free, anonymous tax estimator — no signup, no sensitive data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
         </p>
         <div className="fu d2" style={{marginBottom:'1.5rem'}}>
           <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:100,padding:'4px 14px',fontSize:'.75rem',fontWeight:700,color:'#78350F',display:'inline-flex',alignItems:'center',gap:5,marginBottom:'.625rem'}}>
