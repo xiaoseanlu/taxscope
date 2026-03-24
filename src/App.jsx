@@ -4,7 +4,7 @@
  * Paste this into your HTML <head> for SEO:
  *
  * <title>TaxScope — Free 2025 Tax Estimator | See What You Owe or Get Back</title>
- * <meta name="description" content="Free anonymous 2025 tax estimator. Find out in 4 minutes if you're getting a refund or owe taxes — no signup, no real data needed. Covers W-2, freelance, business owners, retirees, and more.">
+ * <meta name="description" content="Free anonymous 2025 tax estimator. Find out in 4 minutes if you're getting a refund or owe taxes — no signup, no sensitive data needed. Covers W-2, freelance, business owners, retirees, and more.">
  * <meta name="keywords" content="free tax estimator 2025, tax refund calculator, income tax estimator, how much will I owe in taxes, freelancer tax estimator, self employed tax calculator, 1040 estimator, tax refund estimator, small business tax estimator, gig worker taxes, W-2 tax estimator, tax balance due calculator">
  * <meta property="og:title" content="TaxScope — Free 2025 Tax Estimator">
  * <meta property="og:description" content="Instantly estimate your 2025 taxes — refund or balance due. Anonymous, free, takes 4 minutes. No signup.">
@@ -69,7 +69,7 @@ select{appearance:none;-webkit-appearance:none;background-image:url("data:image/
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes barIn{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
-@keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes drawerDown{from{transform:translateY(0)}to{transform:translateY(100%)}}
 .fu{animation:fadeUp .38s cubic-bezier(.22,.68,0,1.1) both}
 .fi{animation:fadeIn .25s ease both}
 .d1{animation-delay:.05s}.d2{animation-delay:.11s}.d3{animation-delay:.17s}.d4{animation-delay:.24s}
@@ -343,9 +343,9 @@ const PERSONAS=[
   {id:'electrician',name:'Dave',role:'Electrician',loc:'NV',data:{wt:['w2'],st:'NV',age:'30-44',fs:'mfj',w2:72000,wh:9000,r401k:10000,kids:2,cc:true,ccAmt:8500}},
   {id:'nurse',name:'Maya',role:'RN + Side Shifts',loc:'FL',data:{wt:['w2','se'],st:'FL',age:'30-44',fs:'single',w2:68000,wh:9000,seInc:18000,estP:2000,r401k:6000,sloan:2500}},
   {id:'lawyer',name:'Chris',role:'Attorney',loc:'DC',data:{wt:['w2'],st:'DC',age:'45-64',fs:'mfj',w2:280000,sw2:95000,wh:98000,r401k:23500,home:true,mort:true,mortInt:28000,salt:40000,charity:12000,kids:1}},
-  {id:'restaurant',name:'Sofia',role:'Restaurant Owner',loc:'IL',data:{wt:['biz'],st:'IL',age:'45-64',fs:'mfj',bizSal:true,bizEmp:true,bizOnly:true,bizReg:true,bizDesc:'restaurant owner',bizRev:650000,bizPay:280000,bizExp:{food_cost:195000,equip10:8000,pos:2500,licenses2:3000},w2:90000,wh:18000,kids:2}},
-  {id:'driver',name:'Marcus',role:'Rideshare Driver',loc:'GA',data:{wt:['se'],st:'GA',age:'under30',fs:'single',seInc:42000,bizDesc:'rideshare driver uber',bizExp:{mileage:11000,phone2:800,data:800,fees:3000}}},
-  {id:'retired',name:'Linda & Bob',role:'Retired Couple',loc:'AZ',data:{wt:['ret'],st:'AZ',age:'65plus',fs:'mfj',otherInc:68000,wh:4200}},
+  {id:'restaurant',name:'Sofia',role:'Restaurant Owner',loc:'IL',data:{wt:['biz'],st:'IL',age:'45-64',fs:'mfj',bizSal:false,bizEmp:true,bizOnly:true,bizReg:true,bizDesc:'restaurant owner',bizRev:650000,bizPay:280000,bizExp:{food_cost:195000,equip10:8000,pos:2500,licenses2:3000},estP:5000,wh:0,kids:2}},
+  {id:'driver',name:'Marcus',role:'Rideshare Driver',loc:'GA',data:{wt:['se'],st:'GA',age:'under30',fs:'single',seInc:42000,bizDesc:'rideshare driver uber',bizExp:{mileage:11000,phone2:800,data:800,fees:3000},estP:0}},
+  {id:'retired',name:'Linda & Bob',role:'Retired Couple',loc:'AZ',data:{wt:['ret'],st:'AZ',age:'65plus',fs:'mfj',otherInc:68000,wh:4200,estP:0}},
   {id:'realtor',name:'Jordan',role:'Real Estate Agent',loc:'CO',data:{wt:['se'],st:'CO',age:'30-44',fs:'single',seInc:95000,estP:13000,ira:7000,home:true,mort:true,mortInt:14000,salt:6000,bizDesc:'real estate agent',bizExp:{mls:2500,mktg10:8000,vehicle19:7000,license20:1200,staging:3000}}},
 ];
 
@@ -477,7 +477,7 @@ function getCx(d){
 function gFC(cx,p){const t={diy:{low:'$0–$30',med:'$0–$100',high:'$50–$150',vhigh:'$100–$200'},assist:{low:'$50–$150',med:'$100–$300',high:'$200–$450',vhigh:'$300–$550'},pro:{low:'$150–$300',med:'$250–$500',high:'$400–$900',vhigh:'$600–$2,000+'}};return t[p]?.[cx.level]||'—';}
 const fm=(n,s)=>{if(n==null)return'—';const a=Math.abs(Math.round(n));if(s&&a>=1000)return`$${Math.round(a/1000)}k`;return`$${a.toLocaleString()}`};
 const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0};
-const OP0={work:false,hh:false,inc:false,sav:false,ded:false};
+const OP0={work:true,hh:true,inc:true,sav:true,ded:true};
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────
 function Tog({on,onChange}){return(<label style={{position:'relative',display:'inline-flex',width:40,height:22,cursor:'pointer',flexShrink:0}}><input type="checkbox" checked={on} onChange={e=>onChange(e.target.checked)} style={{opacity:0,width:0,height:0}}/><span style={{position:'absolute',inset:0,background:on?'var(--coral)':'var(--border2)',borderRadius:11,transition:'background .2s'}}><span style={{position:'absolute',width:16,height:16,borderRadius:'50%',background:'white',top:3,left:on?'calc(100% - 19px)':3,transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/></span></label>);}
@@ -511,8 +511,11 @@ function TR({label,sub,checked,onChange}){return(<div style={{display:'flex',jus
 function Stp({val,min=0,max=10,onChange,label}){return(<div style={{display:'flex',flexDirection:'column',gap:5}}>{label&&<span style={{fontSize:'.79rem',fontWeight:600,color:'var(--ink2)'}}>{label}</span>}<div style={{display:'inline-flex',alignItems:'center',border:'1.5px solid var(--border)',borderRadius:'var(--r)',overflow:'hidden',width:'fit-content'}}><button onClick={()=>onChange(Math.max(min,val-1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s'}} onMouseEnter={e=>e.target.style.background='var(--bg)'} onMouseLeave={e=>e.target.style.background='none'}>−</button><span style={{padding:'6px 16px',fontWeight:700,fontSize:'1.1rem',fontFamily:'var(--fs)',minWidth:44,textAlign:'center'}}>{val}</span><button onClick={()=>onChange(Math.min(max,val+1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s'}} onMouseEnter={e=>e.target.style.background='var(--bg)'} onMouseLeave={e=>e.target.style.background='none'}>+</button></div></div>);}
 function Bx({children}){return <div style={{background:'var(--bg)',border:'1px dashed var(--border2)',borderRadius:'var(--r)',padding:'.875rem',display:'flex',flexDirection:'column',gap:'.875rem'}}>{children}</div>;}
 
-function DCard({id,title,sub,Icon,open,onToggle,done,children,required}){
-  return(<div id={id} style={{background:'var(--white)',borderRadius:'var(--r-xl)',border:`1.5px solid ${open?'var(--coral)':done?'var(--teal)':'var(--border)'}`,overflow:'hidden',transition:'border-color .22s',boxShadow:open?'0 0 0 4px rgba(224,78,26,.07)':done?'0 0 0 3px rgba(11,122,109,.05)':'var(--sh-xs)'}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,.015)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:open?'var(--coral)':done?'var(--teal)':'var(--bg)',border:`1.5px solid ${open?'var(--coral)':done?'var(--teal)':'var(--border)'}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?'white':'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:open?'var(--coral)':'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
+function DCard({id,title,sub,Icon,open,onToggle,done,children,required,optional}){
+  const ac=done?'var(--teal)':open?(optional?'#94A3B8':'var(--coral)'):'var(--border)';
+  const shadow=done?'0 0 0 3px rgba(11,122,109,.05)':open?(optional?'0 2px 8px rgba(0,0,0,.05)':'0 0 0 4px rgba(224,78,26,.07)'):'var(--sh-xs)';
+  const bg=open&&optional&&!done?'#FAFAF8':'var(--white)';
+  return(<div id={id} style={{background:bg,borderRadius:'var(--r-xl)',border:`1.5px solid ${ac}`,overflow:'hidden',transition:'all .22s',boxShadow:shadow}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,.015)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:done?'var(--teal)':open?(optional?'#EAE6E1':'var(--coral)'):'var(--bg)',border:`1.5px solid ${ac}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?(optional?'var(--ink2)':'white'):'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:done?'var(--ink)':open?(optional?'var(--ink2)':'var(--coral)'):'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}{optional&&!done&&<span style={{fontSize:'.62rem',background:open?'#EFF6FF':'var(--bg)',color:open?'#3B82F6':'var(--ink3)',borderRadius:100,padding:'1px 6px',fontWeight:600,border:`1px solid ${open?'#BFDBFE':'var(--border)'}`}}>Optional</span>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
 }
 
 // ─── BIZ SECTION ──────────────────────────────────────────────────
@@ -574,7 +577,7 @@ function BizSection({d,upd}){
 }
 
 // ─── RESULTS DRAWER ───────────────────────────────────────────────
-function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose}){
+function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}){
   const[comfort,setComfort]=useState(5);
   const[openPath,setOpenPath]=useState(null);
   const cx=getCx(data);
@@ -584,13 +587,14 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose}){
   const autoP=comfort<=3?'pro':comfort<=6?'assist':'diy';
   const PRODS=mkProds(cx.level);
   const prods4=pid=>pid==='diy'?(cx.level==='low'?PRODS.diy_low:cx.level==='vhigh'||cx.level==='high'?PRODS.diy_high:PRODS.diy_med):pid==='assist'?PRODS.assist:PRODS.pro;
-  const PATHS=[{id:'diy',Icon:Laptop,t:'Do it myself',desc:'Use filing software and file on my own.'},{id:'assist',Icon:Star,t:'Second set of eyes',desc:'I fill it out — a pro reviews before I file.'},{id:'pro',Icon:Briefcase,t:'Hand it off completely',desc:'A pro prepares and files my entire return.'}];
+  const PATHS=[{id:'diy',Icon:Laptop,t:"I've got this — I'll do it myself",desc:"I'm comfortable using tax software on my own."},{id:'assist',Icon:Star,t:'I want a pro to check my work',desc:"I'll fill it in — then an expert reviews before I file."},{id:'pro',Icon:Briefcase,t:'Just take care of it for me',desc:"I'd rather hand everything to a professional."}];
   const chartD=[{n:'Gross',v:calc.gross,c:'#93C5FD'},{n:'After Adj.',v:calc.agi,c:'#6EE7B7'},{n:'Taxable',v:calc.taxable,c:'#FCA5A5'},{n:'Total Tax',v:calc.tot,c:'#FCD34D'}].filter(x=>x.v>0);
-  return(<div style={{background:'var(--white)',borderTop:'3px solid var(--coral)',maxHeight:'88vh',overflowY:'auto',animation:'drawerUp .38s cubic-bezier(.22,.68,0,1) both'}}>
+  return(<div style={{background:'var(--white)',borderTop:'3px solid var(--coral)',maxHeight:'88vh',overflowY:'auto',animation:closing?'drawerDown .4s cubic-bezier(.4,0,1,1) both':'drawerUp 1.1s cubic-bezier(.16,1,.3,1) both'}} onWheel={e=>e.stopPropagation()} onTouchMove={e=>e.stopPropagation()}>
     <div style={{maxWidth:900,margin:'0 auto',padding:'1.5rem 1.5rem 3rem'}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
+      {/* Sticky close header */}
+      <div style={{position:'sticky',top:0,zIndex:10,background:'var(--white)',borderBottom:'1px solid var(--border)',padding:'.875rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.5rem'}}>
         <div style={{fontWeight:800,fontSize:'1rem',display:'flex',alignItems:'center',gap:6}}><Target size={16} style={{color:'var(--coral)'}}/>Your Full Tax Estimate</div>
-        <button onClick={onClose} style={{background:'var(--bg)',border:'1.5px solid var(--border)',borderRadius:100,padding:'5px 12px',fontWeight:600,fontSize:'.76rem',cursor:'pointer',display:'flex',alignItems:'center',gap:4,transition:'all .13s'}} onMouseEnter={e=>e.currentTarget.style.borderColor='var(--ink2)'} onMouseLeave={e=>e.currentTarget.style.borderColor='var(--border)'}><ChevronDown size={12}/>Collapse</button>
+        <button onClick={onClose} aria-label="Close" style={{width:32,height:32,borderRadius:'50%',background:'var(--bg)',border:'1.5px solid var(--border)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.1rem',color:'var(--ink2)',transition:'all .15s',flexShrink:0,lineHeight:1}} onMouseEnter={e=>{e.currentTarget.style.background='var(--ink)';e.currentTarget.style.color='white';e.currentTarget.style.borderColor='var(--ink)';}} onMouseLeave={e=>{e.currentTarget.style.background='var(--bg)';e.currentTarget.style.color='var(--ink2)';e.currentTarget.style.borderColor='var(--border)';}}>×</button>
       </div>
       <div style={{textAlign:'center',padding:'1.25rem',background:isR?'#F0FDF4':isO&&amt>1500?'#FEF2F2':'#FEFCE8',borderRadius:'var(--r-xl)',marginBottom:'1.25rem',border:`1.5px solid ${isR?'#86EFAC':isO&&amt>1500?'#FECACA':'#FDE68A'}`}}>
         <div style={{fontSize:'.64rem',fontWeight:700,color:mainC,textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>{isR?'Estimated Refund 🎉':isO?'Estimated Balance Due':'≈ Break Even'}</div>
@@ -614,10 +618,18 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose}){
         </div>
       </div>
       <div>
-        <div style={{fontWeight:700,fontSize:'.875rem',marginBottom:4}}>How do you want to file?</div>
-        <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'8px 11px',fontSize:'.74rem',color:'#78350F',marginBottom:'1rem',lineHeight:1.65,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={12} style={{flexShrink:0,marginTop:1}}/><span><strong>About the cost ranges:</strong> These are what filing software typically charges <em>you to prepare your return</em> — not additional taxes owed. In general, filing costs range from <strong>{gFC(cx,'diy')}</strong> (DIY) to <strong>{gFC(cx,'pro')}</strong> (full service). Tap any option below to see specific tools.</span></div>
+        {/* ── FILING SECTION CARD ── */}
+        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',border:'1.5px solid var(--border)',padding:'1.25rem',marginTop:'.25rem'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1.5px solid var(--border)'}}>
+          <div style={{width:32,height:32,borderRadius:'50%',background:'var(--coral)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Briefcase size={14} style={{color:'white',strokeWidth:2}}/></div>
+          <div>
+            <div style={{fontWeight:800,fontSize:'.95rem'}}>How do you want to file?</div>
+            <div style={{fontSize:'.72rem',color:'var(--ink3)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
+          </div>
+        </div>
+        <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',marginBottom:'.625rem',lineHeight:1.6,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/><span><strong>About costs:</strong> These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></span></div>
         <div style={{display:'flex',flexDirection:'column',gap:7}}>
-          {PATHS.map(p=>{const isAuto=!openPath&&autoP===p.id;const isOpen=openPath===p.id||(openPath===null&&autoP===p.id);const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--coral)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--coral-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(224,78,26,.08)':'var(--sh-xs)'}}><button onClick={()=>setOpenPath(openPath===p.id?null:p.id)} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--coral)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--coral)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isAuto&&<Chip>Suggested for you</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>filing cost range</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
+          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--coral)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--coral-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(224,78,26,.08)':'var(--sh-xs)'}}><button onClick={()=>setOpenPath(openPath===p.id?null:p.id)} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--coral)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--coral)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
           <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid var(--coral-md)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:`1.5px solid ${i===0?'var(--coral)':'var(--border)'}`,transition:'all .14s',textDecoration:'none',color:'inherit'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor=i===0?'var(--coral)':'var(--border)';}}>
             <div style={{width:34,height:34,borderRadius:8,background:`${pr.c}15`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.15rem',flexShrink:0,border:`1px solid ${pr.c}22`,marginTop:1}}>{pr.em}</div>
             <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={i===0?'var(--coral)':pr.c} bg={i===0?'var(--coral-lt)':`${pr.c}12`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid var(--coral-md)',paddingTop:4}}>{pr.detail}</div>}</div>
@@ -625,35 +637,30 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose}){
           </a>))}</div></div>)}</div>
           </div>);})}
         </div>
-        {/* 2026 PLANNING PANEL */}
+
+        </div>{/* end filing card */}
+
+        {/* 2026 PLANNING PANEL — standalone card */}
         {calc26&&calc.gross>0&&(
           <div style={{background:'linear-gradient(135deg,#EFF6FF,#DBEAFE)',border:'1.5px solid #BFDBFE',borderRadius:'var(--r-xl)',padding:'1.25rem',marginTop:'1rem'}}>
-            <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:'1rem'}}>
-              <div style={{width:28,height:28,borderRadius:'50%',background:'#3B82F6',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px solid #BFDBFE'}}>
+              <div style={{width:32,height:32,borderRadius:'50%',background:'#3B82F6',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                 <TrendingUp size={14} style={{color:'white'}}/>
               </div>
               <div>
-                <div style={{fontWeight:800,fontSize:'.9rem',color:'#1E3A8A'}}>Plan ahead for 2026</div>
-                <div style={{fontSize:'.72rem',color:'#3B82F6',marginTop:1}}>You're earning 2026 income right now — here's what changes for your taxes.</div>
+                <div style={{fontWeight:800,fontSize:'.95rem',color:'#1E3A8A'}}>Plan ahead for 2026</div>
+                <div style={{fontSize:'.72rem',color:'#3B82F6',marginTop:1}}>You're earning 2026 income right now — here's what changes.</div>
               </div>
             </div>
-
-            {/* Big diff callout */}
             {bigDiff&&(
               <div style={{background:'white',borderRadius:'var(--r)',padding:'10px 13px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
-                <div style={{fontSize:'.79rem',color:'#1E3A8A'}}>
-                  <strong>With 2026 tax rules, your estimate would be:</strong>
-                </div>
+                <div style={{fontSize:'.79rem',color:'#1E3A8A'}}><strong>With 2026 tax rules, your estimate would be:</strong></div>
                 <div style={{fontFamily:'var(--fs)',fontSize:'1.25rem',fontWeight:700,color:yearDiff<0?'#14803D':'#C71D1D',flexShrink:0}}>
                   {yearDiff<0?`${fm(Math.abs(calc26.res))} refund`:`${fm(Math.abs(calc26.res))} owed`}
-                  <span style={{fontSize:'.65rem',fontWeight:600,color:'#3B82F6',marginLeft:5}}>
-                    ({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs 2025)
-                  </span>
+                  <span style={{fontSize:'.65rem',fontWeight:600,color:'#3B82F6',marginLeft:5}}>({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs 2025)</span>
                 </div>
               </div>
             )}
-
-            {/* Key 2026 changes relevant to this user */}
             <div style={{display:'flex',flexDirection:'column',gap:6}}>
               {TAX_DATA[2026].changes.map((c,i)=>(
                 <div key={i} style={{background:'white',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start'}}>
@@ -664,24 +671,23 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose}){
                   </div>
                 </div>
               ))}
-              {/* Senior deduction only if relevant */}
               {data.age==='65plus'&&(
                 <div style={{background:'#ECFDF5',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start',border:'1px solid #86EFAC'}}>
                   <span style={{fontSize:'1rem',flexShrink:0}}>🎉</span>
                   <div>
                     <div style={{fontWeight:700,fontSize:'.79rem',color:'#14803D'}}>You qualify for the new $6,000 Senior Deduction!</div>
-                    <div style={{fontSize:'.72rem',color:'#15803D',marginTop:1,lineHeight:1.5}}>Brand new for 2026 (and 2025–2028): an additional $6,000 deduction for filers 65+, on top of your standard deduction. Phases out above $75k income (single) / $150k (joint).</div>
+                    <div style={{fontSize:'.72rem',color:'#15803D',marginTop:1,lineHeight:1.5}}>Brand new for 2026 (2025–2028): $6,000 additional deduction for filers 65+. Phases out above $75k (single) / $150k (joint).</div>
                   </div>
                 </div>
               )}
             </div>
             <div style={{marginTop:10,fontSize:'.69rem',color:'#3B82F6',textAlign:'center',opacity:.8}}>
-              Estimates only — 2026 rules based on IRS Rev. Proc. 2025-32 · Returns file in April 2027
+              Estimates only · 2026 rules: IRS Rev. Proc. 2025-32 · Files April 2027
             </div>
           </div>
         )}
 
-                <div style={{marginTop:'1rem',padding:'8px 12px',background:'var(--bg)',borderRadius:'var(--r-lg)',fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.7,textAlign:'center'}}>🔒 TaxScope is a free sandbox estimator — not tax advice. Numbers are estimates based on 2025 & 2026 tax data (IRS Rev. Proc. 2024-40, 2025-32). Always consult a tax professional for your actual return.</div>
+        <div style={{marginTop:'1rem',padding:'8px 12px',background:'var(--bg)',borderRadius:'var(--r-lg)',fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.7,textAlign:'center'}}>🔒 TaxScope is a free sandbox estimator — not tax advice. Numbers are estimates based on 2025 & 2026 tax data (IRS Rev. Proc. 2024-40, 2025-32). Always consult a tax professional for your actual return.</div>
       </div>
     </div>
   </div>);
@@ -693,6 +699,10 @@ export default function App(){
   const[op,setOp]=useState({...OP0});
   const[started,setStarted]=useState(false);
   const[drawerOpen,setDrawerOpen]=useState(false);
+  const[selectedPersona,setSelectedPersona]=useState(null);
+  const[drawerDismissed,setDrawerDismissed]=useState(false);
+  const[drawerPeek,setDrawerPeek]=useState(0);
+  const[drawerClosing,setDrawerClosing]=useState(false); // 0=hidden, 1=fully visible, 0<x<1=animating in
   const upd=useCallback((k,v)=>setD(p=>({...p,[k]:v})),[]);
   const tog=k=>setOp(o=>({...o,[k]:!o[k]}));
 
@@ -707,14 +717,56 @@ export default function App(){
   const Y26=TAX_DATA[2026];
 
   useEffect(()=>{const el=document.createElement('style');el.textContent=CSS;document.head.prepend(el);return()=>el.remove();},[]);
-  const reset=useCallback(()=>{setD({...D0});setOp({...OP0});setStarted(false);setDrawerOpen(false);},[]);
-  const load=p=>{setD({...D0,...p.data,bizExp:p.data.bizExp||{},seExp:{}});setOp({...OP0});setStarted(true);};
-  const startOwn=()=>{setD({...D0});setOp({work:true,...Object.fromEntries(Object.keys(OP0).filter(k=>k!=='work').map(k=>[k,false]))});setStarted(true);};
+  const reset=useCallback(()=>{setD({...D0});setOp({...OP0});setStarted(false);setDrawerOpen(false);setSelectedPersona(null);setDrawerDismissed(false);},[]);
+  const load=p=>{setD({...D0,...p.data,bizExp:p.data.bizExp||{},seExp:{}});setOp({...OP0});setSelectedPersona(p.id);setStarted(true);};
+  const startOwn=()=>{setD({...D0});setOp({...OP0});setSelectedPersona(null);setStarted(true);};
   const hasW2=d.wt.includes('w2'),hasSE=d.wt.includes('se'),hasBiz=d.wt.includes('biz'),hasRet=d.wt.includes('ret');
   const doneWork=d.wt.length>0&&d.st&&d.age;
   const doneInc=calc.gross>0;
+  const doneHH=d.fs!=='single'||(d.kids||0)>0||d.cc||d.edu>0;
+  const doneSav=(d.r401k||0)>0||(d.ira||0)>0||(d.hsa||0)>0||(d.sloan||0)>0||(d.seHI||0)>0;
+  const doneDed=d.home||(d.salt||0)>0||(d.charity||0)>0;
+  // Who likely needs quarterly estimated payments:
+  // SE/freelance, biz owner (draw not salary), retiree with unwithheld income,
+  // or anyone likely owing $1k+ with withholding gap
+  // IRS rule: quarterly estimated tax required if expect to owe $1k+ and
+  // withholding covers <90% of current year tax or <100% of prior year tax.
+  // Practically: SE income, business draws, retirement distributions, or significant underwithholding.
+  const needsQuarterly=(
+    d.wt.includes('se')||
+    d.wt.includes('biz')||          // all business owners — draws AND salary scenarios can require it
+    d.wt.includes('ret')||          // retirees: SS, pension, IRA distributions often under-withheld
+    (calc.res>1000&&(d.wh||0)<calc.tot*.85)  // W2 workers who are significantly under-withheld
+  );
   const isR=calc.res<=-1,isO=calc.res>=1;
   const amt=Math.abs(calc.res);
+
+  // Scroll-linked drawer: slides in as user enters footer zone, re-triggers every scroll
+  useEffect(()=>{
+    if(!calc.gross||!started)return;
+    const onScroll=()=>{
+      if(drawerOpen)return;
+      const footer=document.querySelector('footer');
+      if(!footer)return;
+      const vh=window.innerHeight;
+      const footerTop=footer.getBoundingClientRect().top;
+      // Reset dismissed state whenever user scrolls back above footer zone
+      if(footerTop>vh&&drawerDismissed){setDrawerDismissed(false);setDrawerPeek(0);return;}
+      // Compute peek: 0 when footer is at bottom of screen, 1 when footer is 50% up screen
+      const progress=Math.max(0,Math.min(1,(vh-footerTop)/(vh*0.5)));
+      if(!drawerDismissed){
+        setDrawerPeek(progress);
+        if(progress>=1)setDrawerOpen(true); // fully open when fully scrolled in
+      }
+    };
+    window.addEventListener('scroll',onScroll,{passive:true});
+    return()=>window.removeEventListener('scroll',onScroll);
+  },[calc.gross,started,drawerOpen,drawerDismissed]);
+
+  const closeDrawer=useCallback(()=>{
+    setDrawerClosing(true);
+    setTimeout(()=>{setDrawerOpen(false);setDrawerClosing(false);setDrawerDismissed(true);setDrawerPeek(0);},420);
+  },[]);
 
   // Required fields
   const missingItems=[];
@@ -760,7 +812,7 @@ export default function App(){
           Will you get <em style={{color:'var(--coral)'}}>money back</em>,<br/>or owe more this year?
         </h1>
         <p className="fu d1" style={{fontSize:'.9rem',color:'var(--ink2)',maxWidth:440,margin:'0 auto 1.75rem',lineHeight:1.8}}>
-          Free, anonymous 2025 tax estimator — no signup, no real data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
+          Free, anonymous 2025 tax estimator — no signup, no sensitive data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
         </p>
         <div className="fu d2" style={{marginBottom:'1.5rem'}}>
           <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:100,padding:'4px 14px',fontSize:'.75rem',fontWeight:700,color:'#78350F',display:'inline-flex',alignItems:'center',gap:5,marginBottom:'.625rem'}}>
@@ -768,13 +820,13 @@ export default function App(){
           </div>
           <p style={{fontSize:'.75rem',color:'var(--ink3)',marginBottom:'.75rem'}}>10 fictional people, fully pre-filled. Explore their scenario or scroll down to enter your own.</p>
           <div style={{display:'flex',gap:5,overflowX:'auto',justifyContent:'center',flexWrap:'wrap',padding:'0 .5rem .25rem',maxWidth:920,margin:'0 auto'}}>
-            {PERSONAS.map(p=><button key={p.id} onClick={()=>load(p)} style={{background:'var(--white)',border:'1.5px solid var(--border)',borderRadius:100,padding:'5px 12px',fontWeight:600,fontSize:'.73rem',cursor:'pointer',display:'flex',alignItems:'center',gap:4,transition:'all .14s',flexShrink:0,whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';e.currentTarget.style.transform='translateY(-2px)';}} onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';e.currentTarget.style.transform='none';}}><span style={{fontWeight:700}}>{p.name}</span><span style={{color:'var(--ink3)',fontWeight:400}}>({p.role})</span></button>)}
+            {PERSONAS.map(p=>{const sel=selectedPersona===p.id;return(<button key={p.id} onClick={()=>load(p)} style={{background:sel?'var(--coral)':'var(--white)',border:`1.5px solid ${sel?'var(--coral)':'var(--border)'}`,borderRadius:100,padding:'5px 12px',fontWeight:600,fontSize:'.73rem',cursor:'pointer',display:'flex',alignItems:'center',gap:4,transition:'all .14s',flexShrink:0,whiteSpace:'nowrap',boxShadow:sel?'0 2px 8px rgba(224,78,26,.3)':'none',transform:sel?'translateY(-2px)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';e.currentTarget.style.transform='translateY(-2px)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';e.currentTarget.style.transform='none';}}}><span style={{fontWeight:700,color:sel?'white':'var(--ink)'}}>{p.name}</span><span style={{color:sel?'rgba(255,255,255,.75)':'var(--ink3)',fontWeight:400}}>({p.role})</span></button>);})}
           </div>
         </div>
         <div className="fu d3" style={{display:'flex',alignItems:'center',gap:'1rem',justifyContent:'center',flexWrap:'wrap'}}>
           <div style={{flex:1,maxWidth:110,height:1,background:'var(--border)'}}/>
-          <button onClick={startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'flex',alignItems:'center',gap:7,transition:'all .17s',boxShadow:'0 4px 18px rgba(224,78,26,.32)',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 7px 28px rgba(224,78,26,.44)';}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 4px 18px rgba(224,78,26,.32)';}}>
-            <Calculator size={15}/>Run my own estimate — let's go!
+          <button onClick={started?reset:startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'flex',alignItems:'center',gap:7,transition:'all .17s',boxShadow:'0 4px 18px rgba(224,78,26,.32)',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 7px 28px rgba(224,78,26,.44)';}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 4px 18px rgba(224,78,26,.32)';}}>
+            {started?<><RefreshCw size={15}/>Start over</>:<><Calculator size={15}/>Run my own estimate — let's go!</>}
           </button>
           <div style={{flex:1,maxWidth:110,height:1,background:'var(--border)'}}/>
         </div>
@@ -802,13 +854,13 @@ export default function App(){
           </div>
           {d.st&&NT.has(d.st)&&<div style={{background:'var(--green-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--green)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><Check size={11}/>Zero state income tax in {SN[d.st]}</div>}
         </DCard>
-        <DCard id="card-hh" title="Household" sub="Family affects deductions and credits" Icon={Users} open={op.hh} onToggle={()=>tog('hh')} done={false}>
+        <DCard id="card-hh" title="Household" sub="Family affects deductions and credits" Icon={Users} open={op.hh} onToggle={()=>tog('hh')} done={doneHH} optional>
           <TileG val={d.fs} onChange={v=>{upd('fs',v);if(v==='single')upd('sw2',0);}} cols={2} opts={[{v:'single',label:'Single',sub:'Filing solo',Icon:Briefcase},{v:'mfj',label:'Married jointly',sub:'Usually better',Icon:Users},{v:'hoh',label:'Head of household',sub:'Single parent',Icon:Users},{v:'mfs',label:'Married separately',Icon:Briefcase}]}/>
           <Stp val={d.kids} onChange={v=>upd('kids',v)} label="Kids or dependents under 17"/>
           {d.kids>0&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'8px 11px'}}><div style={{fontSize:'.78rem',color:'var(--teal)',fontWeight:700,marginBottom:2}}>{d.kids} kid{d.kids>1?'s':''} × $2,200 credit = {fm(d.kids*2200)} off your tax bill</div><div style={{fontSize:'.7rem',color:'var(--teal)',opacity:.85}}>That's a credit — reduces your tax bill dollar-for-dollar.</div></div>}
           {d.kids>0&&<Bx><div style={{fontSize:'.75rem',fontWeight:700,color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><Gift size={11}/>More ways to lower taxes with kids:</div><TR label="Pay for childcare so you can work?" sub="Child & Dependent Care Credit — up to 20% back" checked={d.cc} onChange={v=>upd('cc',v)}/>{d.cc&&<Sld label="Annual childcare cost" val={d.ccAmt} min={0} max={25000} step={500} onChange={v=>upd('ccAmt',v)} tip="You may get up to 20% of qualifying costs as a credit — up to $6k for 2+ kids."/>}<TR label="Anyone in household in college?" sub="American Opportunity Credit — up to $2,500/yr" checked={d.edu>0} onChange={v=>upd('edu',v?8000:0)}/>{d.edu>0&&<Sld label="Tuition + fees paid this year" val={d.edu} min={0} max={20000} step={500} onChange={v=>upd('edu',v)} tip="AOC: up to $2,500/yr, first 4 years of college. Up to $1k is refundable!"/>}</Bx>}
         </DCard>
-        <DCard id="card-sav" title="Retirement & Savings" sub="Lowers your taxable income before anything else" Icon={PiggyBank} open={op.sav} onToggle={()=>tog('sav')} done={false}>
+        <DCard id="card-sav" title="Retirement & Savings" sub="Lowers your taxable income before anything else" Icon={PiggyBank} open={op.sav} onToggle={()=>tog('sav')} done={doneSav} optional>
           <Sld label="401(k) / 403(b) contributions" val={d.r401k} min={0} max={24500} step={250} onChange={v=>upd('r401k',v)} tip={d.r401k>0?`${fm(d.r401k)} comes directly off your taxable income. 2025 max: $23,500.`:undefined}/>
           <Hint26 show={d.r401k>=23000}>The 2026 401(k) limit just increased to <strong>$24,500</strong> (+$1,000). If you're earning income right now, you can contribute up to that new limit this year.</Hint26>
           <Sld label="Traditional IRA contributions" val={d.ira} min={0} max={7500} step={500} onChange={v=>upd('ira',v)} tip="2025 max: $7,000. Traditional IRA reduces taxes now — Roth doesn't."/>
@@ -841,7 +893,7 @@ export default function App(){
                 <Sld label="Other expenses" val={d.seO} min={0} max={20000} step={200} onChange={v=>upd('seO',v)}/>
               </Bx>
               <div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 11px',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontWeight:600,fontSize:'.78rem',color:'var(--teal)'}}>Net after expenses</span><span style={{fontFamily:'var(--fs)',fontSize:'1rem',fontWeight:700,color:'var(--teal)'}}>{fm(calc.seNet)}</span></div>
-              <Sld label="Estimated quarterly payments made" val={d.estP} min={0} max={80000} step={500} onChange={v=>upd('estP',v)} tip={d.seInc>0&&!d.estP?"No estimated payments = you may owe it all at once when you file, plus a potential underpayment penalty.":undefined}/>
+              {/* QUARTERLY TAX — moved to shared section below */}
             </div>}
             {hasBiz&&<BizSection d={d} upd={upd}/>}
             {hasRet&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
@@ -853,8 +905,80 @@ export default function App(){
         </DCard>
       </div>
 
+      {/* ── QUARTERLY ESTIMATED TAX — shown for SE, biz draws, retirees, anyone likely underpaying ── */}
+      {needsQuarterly&&<div style={{marginBottom:'1rem'}}>
+        <div style={{background:'var(--white)',borderRadius:'var(--r-xl)',border:'1.5px solid #FDE68A',overflow:'hidden',boxShadow:'var(--sh-xs)'}}>
+          <div style={{padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,borderBottom:'1px solid #FEF5D4'}}>
+            <div style={{width:28,height:28,borderRadius:'50%',background:'#FEF5D4',border:'1.5px solid #FDE68A',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Calculator size={13} style={{color:'var(--gold)'}}/></div>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--gold)',display:'flex',alignItems:'center',gap:6}}>
+                Quarterly Estimated Taxes
+                <span style={{fontSize:'.62rem',background:'#FEF5D4',color:'var(--gold)',borderRadius:100,padding:'1px 7px',fontWeight:700,border:'1px solid #FDE68A'}}>
+                  {d.wt.includes('se')?'Freelance / 1099':d.wt.includes('biz')&&!d.bizSal?'Business owner':d.wt.includes('ret')?'Retiree':'Likely applies to you'}
+                </span>
+              </div>
+              <div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1}}>You may need to pay taxes quarterly — not just at filing time</div>
+            </div>
+          </div>
+          <div style={{padding:'1rem 1.125rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
+            <div style={{fontSize:'.8rem',color:'var(--ink2)',lineHeight:1.7,background:'var(--bg)',borderRadius:'var(--r)',padding:'10px 12px'}}>
+              <strong>Why quarterly?</strong> The US tax system is pay-as-you-go. W-2 employees have taxes withheld automatically each paycheck. But if you have income without withholding — from freelancing, a business draw, retirement distributions, or investments — the IRS expects you to pay taxes in <strong>4 installments</strong> throughout the year. Miss them and you'll owe a penalty even if you pay in full when you file.
+            </div>
+            {/* Who owes — context-aware explanation */}
+            {d.wt.includes('se')&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
+              <strong>Self-employed:</strong> No employer is withholding taxes for you. You owe self-employment tax (15.3%) + income tax on your net profit. The IRS expects quarterly payments or you'll face an ~8% annualized underpayment penalty.
+            </div>}
+            {d.wt.includes('biz')&&!d.bizSal&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
+              <strong>Business owner (draw):</strong> Owner's draws aren't subject to withholding. Your business profit flows to your personal return — you're responsible for quarterly payments on that income.
+            </div>}
+            {d.wt.includes('ret')&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
+              <strong>Retirees:</strong> Up to 85% of Social Security may be taxable. Pension and IRA withdrawals are taxable. If your withholding doesn't cover your tax bill, you'll owe estimated payments — or you can ask your plan administrator to increase withholding.
+            </div>}
+            {!d.wt.includes('se')&&!d.wt.includes('biz')&&!d.wt.includes('ret')&&calc.res>1000&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
+              <strong>Heads up:</strong> Your current estimate shows you may owe {fm(calc.res)} at filing. If your withholding isn't covering at least 90% of your tax bill, you may need quarterly payments — or owe a penalty on top of the balance due.
+            </div>}
+            {/* Quarter grid */}
+            <div>
+              <div style={{fontSize:'.75rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>2026 payment schedule:</div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:6}}>
+                {[['Q1','Jan 1 – Mar 31','Apr 15, 2026'],['Q2','Apr 1 – May 31','Jun 16, 2026'],['Q3','Jun 1 – Aug 31','Sep 15, 2026'],['Q4','Sep 1 – Dec 31','Jan 15, 2027']].map(([q,period,due],i)=>{
+                  const dueDates=[new Date('2026-04-15'),new Date('2026-06-16'),new Date('2026-09-15'),new Date('2027-01-15')];
+                  const now=new Date();
+                  const isPast=dueDates[i]<now;
+                  const isCurrent=!isPast&&(i===0||dueDates[i-1]<now);
+                  return(
+                    <div key={q} style={{background:isPast?'var(--bg)':isCurrent?'#FFFBEB':'var(--white)',border:`1px solid ${isCurrent?'#FDE68A':'var(--border)'}`,borderRadius:'var(--r)',padding:'8px 10px'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:3}}>
+                        <span style={{fontWeight:800,fontSize:'.78rem',color:isPast?'var(--ink3)':isCurrent?'var(--gold)':'var(--ink)'}}>{q}</span>
+                        {isCurrent&&<span style={{fontSize:'.56rem',background:'#FDE68A',color:'#78350F',borderRadius:100,padding:'1px 5px',fontWeight:700}}>Current</span>}
+                        {isPast&&<span style={{fontSize:'.56rem',color:'var(--ink3)',fontWeight:500}}>Past</span>}
+                      </div>
+                      <div style={{fontSize:'.66rem',color:'var(--ink3)',lineHeight:1.4,marginBottom:2}}>{period}</div>
+                      <div style={{fontSize:'.68rem',fontWeight:600,color:isPast?'var(--ink3)':isCurrent?'var(--gold)':'var(--ink2)'}}>Due {due}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Safe harbor rule */}
+            <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',fontSize:'.75rem',color:'var(--ink2)',lineHeight:1.7}}>
+              <strong style={{color:'var(--ink)'}}>Safe harbor rule (avoid penalties):</strong> Pay at least <strong>90%</strong> of this year's tax, OR <strong>100% of last year's total tax</strong> (110% if your income exceeds $150k). Whichever is smaller — hit that and you won't be penalized, even if you owe more at filing.
+            </div>
+            {/* Dynamic payment suggestion */}
+            {calc.tot>500&&<div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',fontSize:'.75rem',color:'#78350F',lineHeight:1.7}}>
+              <strong>Rough quarterly payment:</strong> Based on your estimate, aim for about <strong>{fm(Math.round(calc.tot/4))}/quarter</strong> to cover your federal tax bill. This is a ballpark — use IRS Form 1040-ES for the exact amount.
+            </div>}
+            {/* Payments made slider */}
+            <Sld label="Estimated quarterly payments made so far this year" val={d.estP} min={0} max={80000} step={500} onChange={v=>upd('estP',v)} tip={d.estP>0?"Payments already made reduce your balance due dollar-for-dollar and are reflected in your estimate above.":calc.tot>1000?"No payments entered yet — if you haven't paid any, the full amount may be due at filing plus an underpayment penalty (~8% annualized on the shortfall).":undefined}/>
+            <div style={{fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.6}}>
+              Pay online at <strong>irs.gov/payments</strong> (IRS Direct Pay — free) or use the IRS2Go app. Select "Estimated Tax" and "2026" as the tax year.
+            </div>
+          </div>
+        </div>
+      </div>}
+
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:'1rem'}}>
-        <DCard id="card-ded" title="Deductions" sub="We auto-pick whichever saves you more" Icon={Calculator} open={op.ded} onToggle={()=>tog('ded')} done={false}>
+        <DCard id="card-ded" title="Deductions" sub="We auto-pick whichever saves you more" Icon={Calculator} open={op.ded} onToggle={()=>tog('ded')} done={doneDed} optional>
           <div style={{background:'var(--bg)',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:4}}>
             <span style={{fontSize:'.73rem',color:'var(--ink3)'}}>Standard: <strong style={{color:'var(--ink)'}}>{fm(calc.sd)}</strong></span>
             <span style={{fontSize:'.73rem',color:'var(--ink3)'}}>vs Itemized: <strong style={{color:calc.useItem?'var(--teal)':'var(--ink)'}}>{fm(calc.item)}</strong></span>
@@ -879,7 +1003,9 @@ export default function App(){
               <div style={{display:'inline-flex',alignItems:'center',gap:4,background:'rgba(0,0,0,.06)',borderRadius:100,padding:'2px 9px',marginTop:5,fontSize:'.69rem',color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',fontWeight:600}}>Range: {fm(amt*.87,true)} – {fm(amt*1.13,true)}</div>
               <Chip color={cx.color} bg={cx.bg} style={{marginTop:7}}>{cx.label} complexity</Chip>
               <div style={{fontSize:'.69rem',color:'var(--ink3)',marginTop:4,marginBottom:8}}>{cx.desc}</div>
-              <div style={{fontSize:'.68rem',color:'var(--ink3)',fontStyle:'italic',display:'flex',gap:3,alignItems:'center'}}><ArrowRight size={9}/>See breakdown in the bar below</div>
+              <button onClick={()=>setDrawerOpen(true)} style={{marginTop:4,background:'var(--white)',border:'1.5px solid var(--border)',borderRadius:'var(--r-lg)',padding:'8px 14px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:5,fontSize:'.78rem',fontWeight:700,color:'var(--ink2)',width:'100%',transition:'all .16s'}} onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.color='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';}} onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.color='var(--ink2)';e.currentTarget.style.background='var(--white)';}}>
+                <TrendingUp size={12}/>See full breakdown &amp; filing options
+              </button>
               {bigDiff&&calc26&&(
                 <div style={{marginTop:8,padding:'6px 10px',background:'#EFF6FF',borderRadius:'var(--r)',border:'1px solid #BFDBFE',fontSize:'.68rem',color:'#1E40AF',display:'flex',gap:4,alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
                   <TrendingUp size={10} style={{flexShrink:0}}/>
@@ -917,9 +1043,15 @@ export default function App(){
       <Calculator size={15}/>Run my own estimate
     </button></div></div>}
 
-    {/* STICKY BAR */}
+    {/* STICKY BAR + SCRIM + SCROLL-LINKED PEEK */}
     {calc.gross>0&&<div style={{position:'fixed',bottom:0,left:0,right:0,zIndex:200}}>
-      {!drawerOpen&&<div style={{background:'var(--ink)',boxShadow:'var(--sh-up)',animation:'barIn .45s cubic-bezier(.22,.68,0,1) both'}}>
+      {/* Background scrim when drawer is open */}
+      {(drawerOpen&&!drawerClosing)&&<div onClick={closeDrawer} style={{position:'fixed',inset:0,background:'rgba(23,20,14,.45)',zIndex:-1,backdropFilter:'blur(2px)',animation:'fadeIn .25s ease'}}/>}
+      {/* Peek preview bar — animates in with scroll, disappears when drawer opens */}
+      {!drawerOpen&&drawerPeek>0&&drawerPeek<1&&(
+        <div style={{position:'absolute',bottom:'100%',left:0,right:0,height:4,background:`linear-gradient(90deg, var(--coral) ${drawerPeek*100}%, transparent ${drawerPeek*100}%)`,opacity:drawerPeek}}/>
+      )}
+      {(!drawerOpen||drawerClosing)&&<div style={{background:'var(--ink)',boxShadow:'var(--sh-up)',transform:'translateY(0)',opacity:1}}>
         <div style={{maxWidth:1100,margin:'0 auto',padding:'10px 16px 10px',display:'flex',flexDirection:'column',gap:8}}>
 
           {/* Row 1: big number left | top bracket | eff rate | complexity — never wraps */}
@@ -965,7 +1097,7 @@ export default function App(){
 
         </div>
       </div>}
-      {drawerOpen&&<ResultsDrawer calc={calc} calc26={calc26} yearDiff={yearDiff} bigDiff={bigDiff} data={d} onClose={()=>setDrawerOpen(false)}/>}
+      {(drawerOpen||drawerClosing)&&<ResultsDrawer calc={calc} calc26={calc26} yearDiff={yearDiff} bigDiff={bigDiff} data={d} onClose={closeDrawer} closing={drawerClosing}/>}
     </div>}
 
     {/* ── LEGAL FOOTER ── */}
@@ -1039,6 +1171,6 @@ export default function App(){
       </div>
     </footer>
 
-    <style>{`@keyframes barIn{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}@keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@media(max-width:580px){nav>div:last-child>span{display:none!important}}`}</style>
+    <style>{`@keyframes barIn{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}@keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes drawerDown{from{transform:translateY(0)}to{transform:translateY(100%)}}@media(max-width:580px){nav>div:last-child>span{display:none!important}}`}</style>
   </div>);
 }
