@@ -42,14 +42,14 @@ const CSS = `
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 :root{
-  --bg:#F5F2EC;--white:#FFFFFF;--ink:#17140E;--ink2:#6A5F52;--ink3:#ADA59B;
+  --bg:#F5F2EC;--white:#FFFFFF;--ink:#17140E;--ink2:#3D3228;--ink3:#5C5047;
   --coral:#E04E1A;--coral-lt:#FDF0EA;--coral-md:#F6C9B0;
   --teal:#0B7A6D;--teal-lt:#D3F0EB;
-  --gold:#A97B08;--gold-lt:#FEF5D4;
-  --green:#14803D;--green-lt:#DCFCE7;
-  --red:#C71D1D;--red-lt:#FEE2E2;
-  --border:#DDD7CE;--border2:#C9C0B5;
-  --track:#B8B0A6;
+  --gold:#8A6200;--gold-lt:#FEF5D4;
+  --green:#0F6830;--green-lt:#DCFCE7;
+  --red:#B01818;--red-lt:#FEE2E2;
+  --border:#C9C0B5;--border2:#A8998C;
+  --track:#9C9088;
   --sh-xs:0 1px 3px rgba(23,20,14,.08);
   --sh:0 3px 14px rgba(23,20,14,.10),0 1px 4px rgba(23,20,14,.05);
   --sh-up:0 -4px 28px rgba(23,20,14,.15);
@@ -625,7 +625,7 @@ function Sld({label,val,min,max,step=500,onChange,tip}){
       </button>)}
     </div>
     <div style={{padding:'3px 0'}}><input type="range" min={min} max={max} step={step} value={val} onChange={e=>onChange(+e.target.value)} style={{background:`linear-gradient(90deg,var(--coral) ${pct}%,var(--track) ${pct}%)`}}/></div>
-    <div style={{display:'flex',justifyContent:'space-between',fontSize:'.64rem',color:'var(--ink3)'}}><span>{fm(min,true)}</span><span>{fm(max,true)}</span></div>
+    <div style={{display:'flex',justifyContent:'space-between',fontSize:'.68rem',fontWeight:500,color:'var(--ink3)'}}><span>{fm(min,true)}</span><span>{fm(max,true)}</span></div>
     {tip&&<div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',display:'flex',gap:7,alignItems:'flex-start'}}><Info size={12} style={{color:'#92400E',flexShrink:0,marginTop:1}}/><span style={{fontSize:'.74rem',color:'#78350F',lineHeight:1.6}}>{tip}</span></div>}
   </div>);
 }
@@ -643,7 +643,7 @@ function DCard({id,title,sub,Icon,open,onToggle,done,children,required,optional}
   const ac=done?'var(--teal)':open?(optional?'#94A3B8':'var(--coral)'):'var(--border)';
   const shadow=done?'0 0 0 3px rgba(11,122,109,.05)':open?(optional?'0 2px 8px rgba(0,0,0,.05)':'0 0 0 4px rgba(224,78,26,.07)'):'var(--sh-xs)';
   const bg=open&&optional&&!done?'#FAFAF8':'var(--white)';
-  return(<div id={id} style={{background:bg,borderRadius:'var(--r-xl)',border:`1.5px solid ${ac}`,overflow:'hidden',transition:'all .22s',boxShadow:shadow}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,.015)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:done?'var(--teal)':open?(optional?'#EAE6E1':'var(--coral)'):'var(--bg)',border:`1.5px solid ${ac}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?(optional?'var(--ink2)':'white'):'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:done?'var(--ink)':open?(optional?'var(--ink2)':'var(--coral)'):'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}{optional&&!done&&<span style={{fontSize:'.62rem',background:open?'#EFF6FF':'var(--bg)',color:open?'#3B82F6':'var(--ink3)',borderRadius:100,padding:'1px 6px',fontWeight:600,border:`1px solid ${open?'#BFDBFE':'var(--border)'}`}}>Optional</span>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
+  return(<div id={id} style={{background:bg,borderRadius:'var(--r-xl)',border:`1.5px solid ${ac}`,overflow:'hidden',transition:'all .22s',boxShadow:shadow}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,.015)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:done?'var(--teal)':open?(optional?'#EAE6E1':'var(--coral)'):'var(--bg)',border:`1.5px solid ${ac}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?(optional?'var(--ink2)':'white'):'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:done?'var(--ink)':open?(optional?'var(--ink2)':'var(--coral)'):'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}{optional&&!done&&<span style={{fontSize:'.62rem',background:open?'#EFF6FF':'var(--bg)',color:open?'#3B82F6':'var(--ink3)',borderRadius:100,padding:'1px 6px',fontWeight:600,border:`1px solid ${open?'#BFDBFE':'var(--border)'}`}}>Optional</span>}</div><div style={{fontSize:'.72rem',fontWeight:500,color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
 }
 
 // ─── BIZ SECTION ──────────────────────────────────────────────────
@@ -712,8 +712,8 @@ function BizSection({d,upd}){
       <div style={{marginTop:5,fontSize:'.68rem',fontWeight:600,color:'var(--ink3)'}}>Filing complexity: {entityInfo.complexity}</div>
     </div>}
     <TR label="Do you have W-2 employees?" checked={d.bizEmp} onChange={v=>upd('bizEmp',v)}/>
-    <Sld label="Annual business revenue" val={d.bizRev} min={0} max={2000000} step={5000} onChange={v=>upd('bizRev',v)}/>
-    <Sld label="Payroll (employees + your own salary if on W-2)" val={d.bizPay} min={0} max={1000000} step={5000} onChange={v=>upd('bizPay',v)}/>
+    <Sld label="Annual business revenue" val={d.bizRev} min={0} max={20000000} step={50000} onChange={v=>upd('bizRev',v)}/>
+    <Sld label="Payroll (employees + your own salary if on W-2)" val={d.bizPay} min={0} max={10000000} step={50000} onChange={v=>upd('bizPay',v)}/>
     {active&&(<div>
       <div style={{background:'linear-gradient(135deg,var(--coral-lt),var(--bg))',border:'1.5px solid var(--coral-md)',borderRadius:'var(--r-lg)',padding:'9px 13px',marginBottom:9}}>
         <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:2}}>{(()=>{const Ic=active.icon;return <Ic size={13} style={{color:'var(--coral)',strokeWidth:2}}/>;})()}<div style={{fontWeight:700,fontSize:'.83rem',color:'var(--coral)'}}>Common deductions for {active.label}</div></div>
@@ -793,7 +793,7 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
         <div style={{fontSize:'.78rem',color:'var(--ink2)',marginBottom:'1rem'}}>Drag to set your level — we'll suggest the right approach.</div>
         <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
           <span style={{fontSize:'1.75rem',flexShrink:0}}>{comfort<=2?'😰':comfort<=4?'😟':comfort<=6?'😐':comfort<=8?'🙂':'😎'}</span>
-          <div style={{flex:1}}><input type="range" min={1} max={10} value={comfort} onChange={e=>setComfort(+e.target.value)} style={{background:`linear-gradient(90deg,var(--coral) ${(comfort-1)/9*100}%,var(--track) ${(comfort-1)/9*100}%)`}}/><div style={{display:'flex',justifyContent:'space-between',fontSize:'.64rem',color:'var(--ink3)',marginTop:3}}><span>Need help</span><span>Totally got this</span></div></div>
+          <div style={{flex:1}}><input type="range" min={1} max={10} value={comfort} onChange={e=>setComfort(+e.target.value)} style={{background:`linear-gradient(90deg,var(--coral) ${(comfort-1)/9*100}%,var(--track) ${(comfort-1)/9*100}%)`}}/><div style={{display:'flex',justifyContent:'space-between',fontSize:'.68rem',fontWeight:500,color:'var(--ink3)',marginTop:3}}><span>Need help</span><span>Totally got this</span></div></div>
         </div>
       </div>
       <div>
@@ -803,12 +803,12 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
           <div style={{width:34,height:34,borderRadius:'50%',background:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 2px 8px rgba(11,122,109,.25)'}}><Briefcase size={15} style={{color:'white',strokeWidth:2}}/></div>
           <div>
             <div style={{fontWeight:800,fontSize:'.95rem',color:'var(--teal)'}}>How do you want to file?</div>
-            <div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
+            <div style={{fontSize:'.75rem',fontWeight:500,color:'var(--ink2)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
           </div>
         </div>
         <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',marginBottom:'.625rem',lineHeight:1.6,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/><span><strong>About costs:</strong> These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></span></div>
         <div style={{display:'flex',flexDirection:'column',gap:7}}>
-          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>{const newPath=openPath===p.id?null:p.id;setOpenPath(newPath);if(newPath)track('filing_path_selected',{path:p.id,is_suggested:isSuggested,complexity:cx.level});}} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
+          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>{const newPath=openPath===p.id?null:p.id;setOpenPath(newPath);if(newPath)track('filing_path_selected',{path:p.id,is_suggested:isSuggested,complexity:cx.level});}} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.75rem',fontWeight:500,color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
           <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(11,122,109,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onClick={()=>track('product_clicked',{product:pr.n,path:p.id,rank:i+1,complexity:cx.level})} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='var(--border)';}}>
             <div style={{width:34,height:34,borderRadius:8,background:`${pr.c}15`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.15rem',flexShrink:0,border:`1px solid ${pr.c}22`,marginTop:1}}>{pr.em}</div>
             <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={pr.c} bg={`${pr.c}15`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid rgba(11,122,109,.2)',paddingTop:4}}>{pr.detail}</div>}</div>
@@ -1004,7 +1004,7 @@ export default function App(){
         <h1 className="fu" style={{fontFamily:'var(--fs)',fontSize:'clamp(1.85rem,4.5vw,3.25rem)',fontWeight:400,lineHeight:1.12,letterSpacing:'-.02em',marginBottom:'.75rem'}}>
           Will you get <em style={{color:'var(--coral)'}}>money back</em>,<br/>or owe more this year?
         </h1>
-        <p className="fu d1" style={{fontSize:'.9rem',color:'var(--ink2)',maxWidth:440,margin:'0 auto 1.75rem',lineHeight:1.8}}>
+        <p className="fu d1" style={{fontSize:'.9rem',fontWeight:500,color:'var(--ink2)',maxWidth:440,margin:'0 auto 1.75rem',lineHeight:1.8}}>
           Free, anonymous tax estimator — no signup, no sensitive data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
         </p>
         <div className="fu d2" style={{marginBottom:'1.5rem'}}>
@@ -1063,7 +1063,7 @@ export default function App(){
           <Sld label="HSA (Health Savings Account)" val={d.hsa} min={0} max={8750} step={200} onChange={v=>upd('hsa',v)} tip="2025 max: $4,300 self · $8,550 family. Triple tax advantage."/>
           <Hint26 show={d.hsa>=4000}>2026 HSA limits: <strong>$4,400</strong> individual · <strong>$8,750</strong> family. The earlier you max it, the more tax-free growth time you get.</Hint26>
           <Sld label="Student loan interest paid" val={d.sloan} min={0} max={2500} step={100} onChange={v=>upd('sloan',v)}/>
-          {(hasSE||hasBiz)&&<Sld label="Self-employed health insurance" val={d.seHI} min={0} max={30000} step={500} onChange={v=>upd('seHI',v)} tip="100% deductible if you're self-employed!"/>}
+          {(hasSE||hasBiz)&&<Sld label="Self-employed health insurance" val={d.seHI} min={0} max={200000} step={5000} onChange={v=>upd('seHI',v)} tip="100% deductible if you're self-employed!"/>}
         </DCard>
       </div>
 
@@ -1072,13 +1072,13 @@ export default function App(){
           {!d.wt.length&&<div style={{padding:'1.5rem',textAlign:'center',color:'var(--ink3)',fontSize:'.875rem',display:'flex',gap:7,alignItems:'center',justifyContent:'center'}}><AlertCircle size={15}/>Fill in Work Situation first, then come back here.</div>}
           {d.wt.length>0&&<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:'1.5rem'}}>
             {(hasW2||(!hasSE&&!hasBiz&&!hasRet))&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><Briefcase size={11}/>W-2 / Employment</div>
-              <Sld label="Annual salary / wages" val={d.w2} min={0} max={500000} step={1000} onChange={v=>upd('w2',v)}/>
-              {(d.fs==='mfj'||d.fs==='mfs')&&<Sld label="Partner / spouse income" val={d.sw2} min={0} max={400000} step={1000} onChange={v=>upd('sw2',v)}/>}
-              <Sld label="Federal tax withheld from paychecks" val={d.wh} min={0} max={200000} step={500} onChange={v=>upd('wh',v)} tip="Check Box 2 on your W-2. Rough estimate: 15–22% of salary."/>
+              <div style={{fontWeight:700,fontSize:'.82rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><Briefcase size={11}/>W-2 / Employment</div>
+              <Sld label="Annual salary / wages" val={d.w2} min={0} max={2000000} step={5000} onChange={v=>upd('w2',v)}/>
+              {(d.fs==='mfj'||d.fs==='mfs')&&<Sld label="Partner / spouse income" val={d.sw2} min={0} max={2000000} step={5000} onChange={v=>upd('sw2',v)}/>}
+              <Sld label="Federal tax withheld from paychecks" val={d.wh} min={0} max={2000000} step={5000} onChange={v=>upd('wh',v)} tip="Check Box 2 on your W-2. Rough estimate: 15–22% of salary."/>
             </div>}
             {hasSE&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><DollarSign size={11}/>Freelance / 1099</div>
+              <div style={{fontWeight:700,fontSize:'.82rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><DollarSign size={11}/>Freelance / 1099</div>
               <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={5000000} step={5000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
               <Bx>
                 <div style={{fontSize:'.74rem',fontWeight:700,color:'var(--ink2)'}}>Core business expenses:</div>
@@ -1092,15 +1092,15 @@ export default function App(){
             </div>}
             {hasBiz&&<BizSection d={d} upd={upd}/>}
             {hasRet&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><PiggyBank size={11}/>Retirement Income</div>
-              <Sld label="SS, pensions, IRA withdrawals, etc." val={d.otherInc||0} min={0} max={200000} step={1000} onChange={v=>upd('otherInc',v)} tip="Up to 85% of Social Security may be taxable depending on total income."/>
-              <Sld label="Tax already withheld" val={d.wh} min={0} max={60000} step={500} onChange={v=>upd('wh',v)}/>
+              <div style={{fontWeight:700,fontSize:'.82rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><PiggyBank size={11}/>Retirement Income</div>
+              <Sld label="SS, pensions, IRA withdrawals, etc." val={d.otherInc||0} min={0} max={2000000} step={5000} onChange={v=>upd('otherInc',v)} tip="Up to 85% of Social Security may be taxable depending on total income."/>
+              <Sld label="Tax already withheld" val={d.wh} min={0} max={500000} step={5000} onChange={v=>upd('wh',v)}/>
             </div>}
             {/* Capital Gains — shown for all filers */}
             {d.wt.length>0&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Capital Gains</div>
-              <Sld label="Long-term capital gains" val={d.capGainLT||0} min={0} max={500000} step={1000} onChange={v=>upd('capGainLT',v)} tip={d.capGainLT>0?"Long-term gains (assets held 12+ months) are taxed at 0%, 15%, or 20% — much lower than ordinary income rates. Your rate depends on your total taxable income.":undefined}/>
-              <Sld label="Short-term capital gains" val={d.capGainST||0} min={0} max={300000} step={1000} onChange={v=>upd('capGainST',v)} tip={d.capGainST>0?"Short-term gains (assets held under 12 months) are taxed as ordinary income — same as your salary.":undefined}/>
+              <div style={{fontWeight:700,fontSize:'.82rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Capital Gains</div>
+              <Sld label="Long-term capital gains" val={d.capGainLT||0} min={0} max={5000000} step={10000} onChange={v=>upd('capGainLT',v)} tip={d.capGainLT>0?"Long-term gains (assets held 12+ months) are taxed at 0%, 15%, or 20% — much lower than ordinary income rates. Your rate depends on your total taxable income.":undefined}/>
+              <Sld label="Short-term capital gains" val={d.capGainST||0} min={0} max={3000000} step={10000} onChange={v=>upd('capGainST',v)} tip={d.capGainST>0?"Short-term gains (assets held under 12 months) are taxed as ordinary income — same as your salary.":undefined}/>
               {(d.capGainLT>0||d.capGainST>0)&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'8px 11px',fontSize:'.74rem',color:'var(--teal)',lineHeight:1.65}}>
                 {d.capGainLT>0&&<div><strong>Long-term rate:</strong> {(()=>{const ti=(d.w2||0)+(d.sw2||0)-Math.min(d.r401k||0,23500);return ti<47025?'0% — you qualify for the lowest bracket!':ti<518900?'15%':'20%';})()}</div>}
                 {d.capGainST>0&&<div style={{marginTop:d.capGainLT>0?4:0}}><strong>Short-term:</strong> Taxed as ordinary income at your marginal rate</div>}
@@ -1174,7 +1174,7 @@ export default function App(){
               <strong>Rough quarterly payment:</strong> Based on your estimate, aim for about <strong>{fm(Math.round(calc.tot/4))}/quarter</strong> to cover your federal tax bill. This is a ballpark — use IRS Form 1040-ES for the exact amount.
             </div>}
             {/* Payments made slider */}
-            <Sld label="Estimated quarterly payments made so far this year" val={d.estP} min={0} max={80000} step={500} onChange={v=>upd('estP',v)} tip={d.estP>0?"Payments already made reduce your balance due dollar-for-dollar and are reflected in your estimate above.":calc.tot>1000?"No payments entered yet — if you haven't paid any, the full amount may be due at filing plus an underpayment penalty (~8% annualized on the shortfall).":undefined}/>
+            <Sld label="Estimated quarterly payments made so far this year" val={d.estP} min={0} max={2000000} step={5000} onChange={v=>upd('estP',v)} tip={d.estP>0?"Payments already made reduce your balance due dollar-for-dollar and are reflected in your estimate above.":calc.tot>1000?"No payments entered yet — if you haven't paid any, the full amount may be due at filing plus an underpayment penalty (~8% annualized on the shortfall).":undefined}/>
             <div style={{fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.6}}>
               Pay online at <strong>irs.gov/payments</strong> (IRS Direct Pay — free) or use the IRS2Go app. Select "Estimated Tax" and "2026" as the tax year.
             </div>
@@ -1190,9 +1190,9 @@ export default function App(){
             <Chip color={calc.useItem?'var(--teal)':'var(--coral)'} bg={calc.useItem?'var(--teal-lt)':'var(--coral-lt)'}>{calc.useItem?'Itemized':'Standard'} ✓</Chip>
           </div>
           <TR label="Do you own a home?" checked={d.home} onChange={v=>upd('home',v)}/>
-          {d.home&&<Bx><TR label="Have a mortgage?" checked={d.mort} onChange={v=>upd('mort',v)}/>{d.mort&&<Sld label="Mortgage interest paid" val={d.mortInt} min={0} max={45000} step={500} onChange={v=>upd('mortInt',v)} tip="Check your 1098 from your lender."/>}</Bx>}
+          {d.home&&<Bx><TR label="Have a mortgage?" checked={d.mort} onChange={v=>upd('mort',v)}/>{d.mort&&<Sld label="Mortgage interest paid" val={d.mortInt} min={0} max={100000} step={500} onChange={v=>upd('mortInt',v)} tip="Check your 1098 from your lender."/>}</Bx>}
           <Sld label="State & local taxes (SALT) paid" val={d.salt} min={0} max={40000} step={500} onChange={v=>upd('salt',v)} tip="Property + state income taxes. 2025 SALT cap: $40,000."/>
-          <Sld label="Charitable donations" val={d.charity} min={0} max={50000} step={200} onChange={v=>upd('charity',v)}/>
+          <Sld label="Charitable donations" val={d.charity} min={0} max={2000000} step={5000} onChange={v=>upd('charity',v)}/>
           {calc.useItem&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--teal)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Itemizing saves {fm(calc.item-calc.sd)} more — auto-applied.</div>}
         </DCard>
 
@@ -1265,23 +1265,23 @@ export default function App(){
             {/* Left: primary result */}
             <div style={{display:'flex',alignItems:'baseline',gap:5,flexShrink:0}}>
               <div style={{fontFamily:'var(--fs)',fontSize:'1.5rem',fontWeight:600,color:isR?'#5EEAD4':isO&&amt>3000?'#FCA5A5':'#FCD34D',lineHeight:1,whiteSpace:'nowrap'}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
-              <div style={{fontSize:'.58rem',fontWeight:700,color:'rgba(255,255,255,.38)',textTransform:'uppercase',letterSpacing:'.06em',whiteSpace:'nowrap'}}>{isR?'refund':isO?'owed':'~even'}</div>
+              <div style={{fontSize:'.65rem',fontWeight:700,color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.06em',whiteSpace:'nowrap'}}>{isR?'refund':isO?'owed':'~even'}</div>
             </div>
 
             {/* Right: 3 stats — flex-shrink:0 on each, no wrap possible */}
             <div style={{display:'flex',alignItems:'center',gap:12,flexShrink:0}}>
               <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'.48rem',fontWeight:700,color:'rgba(255,255,255,.32)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Top bracket</div>
+                <div style={{fontSize:'.55rem',fontWeight:700,color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Top bracket</div>
                 <div style={{fontSize:'.92rem',fontWeight:700,color:'rgba(255,255,255,.72)'}}>{Math.round(calc.mg*100)}%</div>
               </div>
               <div style={{width:1,height:20,background:'rgba(255,255,255,.1)',flexShrink:0}}/>
               <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'.48rem',fontWeight:700,color:'rgba(255,255,255,.32)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Eff. rate</div>
+                <div style={{fontSize:'.55rem',fontWeight:700,color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Eff. rate</div>
                 <div style={{fontSize:'.92rem',fontWeight:700,color:'rgba(255,255,255,.72)'}}>{(calc.eff*100).toFixed(1)}%</div>
               </div>
               <div style={{width:1,height:20,background:'rgba(255,255,255,.1)',flexShrink:0}}/>
               <div style={{textAlign:'right'}}>
-                <div style={{fontSize:'.48rem',fontWeight:700,color:'rgba(255,255,255,.32)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Complexity</div>
+                <div style={{fontSize:'.55rem',fontWeight:700,color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Complexity</div>
                 <div style={{display:'flex',alignItems:'center',gap:3,justifyContent:'flex-end'}}>
                   <div style={{width:5,height:5,borderRadius:'50%',background:cx.color,flexShrink:0}}/>
                   <div style={{fontSize:'.92rem',fontWeight:700,color:'rgba(255,255,255,.72)'}}>{cx.label}</div>
