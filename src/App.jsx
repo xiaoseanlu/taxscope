@@ -17,7 +17,7 @@
  * </script>
  */
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import {
   Briefcase, Users, DollarSign, PiggyBank, Calculator, Gift,
@@ -29,6 +29,12 @@ import {
   HardHat, Stethoscope, Scale, FlaskConical, GraduationCap,
   Megaphone, Plane, Bus, Ship, Hammer, Sprout, Dog, Baby, Glasses
 } from "lucide-react";
+
+// ─── ANALYTICS HELPER ────────────────────────────────────────────
+const track = (event, params={}) => {
+  try { if(typeof window!=='undefined'&&window.gtag) window.gtag('event', event, params); }
+  catch(e){}
+};
 
 // ─── STYLES ───────────────────────────────────────────────────────
 const CSS = `
@@ -436,7 +442,9 @@ function calcTax(d, year=2025){
   const bizPT=d.bizSal?0:bizNet;
   const totalSE=seNet+bizPT;
   const seTax=totalSE>400?totalSE*0.9235*0.153:0;
-  const gross=(d.w2||0)+(d.sw2||0)+totalSE+(d.otherInc||0);
+  const capGainST=d.capGainST||0;  // short-term: ordinary income rates
+  const capGainLT=d.capGainLT||0;  // long-term: preferential rates (0/15/20%)
+  const gross=(d.w2||0)+(d.sw2||0)+totalSE+(d.otherInc||0)+capGainST+capGainLT;
   const adj=Math.min(d.r401k||0,Y.r401kMax)+Math.min(d.ira||0,Y.iraMax)+Math.min(d.hsa||0,Y.hsaMax.family)+Math.min(d.sloan||0,Y.slanMax)+seTax*0.5+(d.seHI||0);
   // Age 65+ bonus standard deduction
   const a65bonus = d.age==='65plus' ? (fs==='mfj'?Y.age65Bonus.mfj:Y.age65Bonus.single) : 0;
@@ -450,8 +458,26 @@ function calcTax(d, year=2025){
   const ded=Math.max(sd,item)+qbi+seniorDed;
   const taxable=Math.max(0,agi-ded);
   const bkts=bk[fs]||bk.single;
+  // Ordinary income tax (excludes LTCG which gets preferential rates)
+  const ordinaryTaxable=Math.max(0,taxable-capGainLT);
   let fT=0,mg=.10;
-  for(const[lo,hi,r]of bkts){if(taxable>lo){fT+=Math.min(taxable-lo,hi-lo)*r;mg=r;}}
+  for(const[lo,hi,r]of bkts){if(ordinaryTaxable>lo){fT+=Math.min(ordinaryTaxable-lo,hi-lo)*r;mg=r;}}
+  // Long-term capital gains tax (preferential rates)
+  const ltcgBrackets={single:[[0,47025,0],[47025,518900,.15],[518900,9e8,.20]],mfj:[[0,94050,0],[94050,583750,.15],[583750,9e8,.20]],hoh:[[0,63000,0],[63000,551350,.15],[551350,9e8,.20]],mfs:[[0,47025,0],[47025,291850,.15],[291850,9e8,.20]]};
+  const ltcgBkts=ltcgBrackets[fs]||ltcgBrackets.single;
+  let ltcgTax=0;
+  if(capGainLT>0){
+    // LTCG stacks on top of ordinary income for rate determination
+    const ltcgBase=ordinaryTaxable;
+    const ltcgTop=ltcgBase+capGainLT;
+    for(const[lo,hi,r]of ltcgBkts){
+      if(ltcgTop>lo&&ltcgBase<hi){
+        const gain=Math.min(ltcgTop,hi)-Math.max(ltcgBase,lo);
+        ltcgTax+=gain*r;
+      }
+    }
+  }
+  fT+=ltcgTax;
   let cr=(d.kids||0)*Y.ctc;
   if((d.ccAmt||0)>0)cr+=Math.min(d.ccAmt,(d.kids||0)>=2?6000:3000)*.2;
   if((d.edu||0)>0)cr+=Math.min(d.edu,10000)*.25;
@@ -466,7 +492,7 @@ function calcTax(d, year=2025){
 
 function getCx(d){
   let s=0;
-  if(d.wt?.includes('biz'))s+=3;if(d.bizSal)s+=2;if(d.bizEmp)s+=1;
+  if(d.wt?.includes('biz'))s+=3;if(d.bizEntity==='scorp'||d.bizEntity==='ccorp')s+=3;else if(d.bizEntity==='partner')s+=2;if(d.bizEmp)s+=1;
   if(d.wt?.includes('se'))s+=2;if((d.wt?.length||0)>1)s+=1;
   if(d.home)s+=1;if((d.kids||0)>0)s+=1;if(d.fs==='mfj'&&(d.sw2||0)>0)s+=1;
   if(s<=1)return{level:'low',label:'Low',color:'#14803D',bg:'#DCFCE7',desc:'Simple — a free DIY tool handles this easily.'};
@@ -476,7 +502,7 @@ function getCx(d){
 }
 function gFC(cx,p){const t={diy:{low:'$0–$30',med:'$0–$100',high:'$50–$150',vhigh:'$100–$200'},assist:{low:'$50–$150',med:'$100–$300',high:'$200–$450',vhigh:'$300–$550'},pro:{low:'$150–$300',med:'$250–$500',high:'$400–$900',vhigh:'$600–$2,000+'}};return t[p]?.[cx.level]||'—';}
 const fm=(n,s)=>{if(n==null)return'—';const a=Math.abs(Math.round(n));if(s&&a>=1000)return`$${Math.round(a/1000)}k`;return`$${a.toLocaleString()}`};
-const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0};
+const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizEntity:null,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0,capGainLT:0,capGainST:0};
 const OP0={work:true,hh:true,inc:true,sav:true,ded:true};
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────
@@ -524,11 +550,17 @@ function BizSection({d,upd}){
   const detected=useMemo(()=>detectBizType(d.bizDesc),[d.bizDesc]);
   const active=BIZ_TYPES.find(b=>b.id===d.bizTypeId)||detected;
   const bizExpTotal=Object.values(d.bizExp||{}).reduce((a,v)=>a+(+v||0),0);
-  let entityLabel=null;
-  if(d.bizReg&&d.bizSal&&d.bizOnly)entityLabel='S-Corporation';
-  else if(d.bizReg&&!d.bizOnly)entityLabel='Partnership / Multi-Member LLC';
-  else if(d.bizReg&&d.bizOnly&&!d.bizSal)entityLabel='Single-Member LLC';
-  else if(!d.bizReg&&d.bizOnly)entityLabel='Sole Proprietor';
+  // Entity label driven by direct selection (bizEntity field)
+  const ENTITY_INFO = {
+    sole_prop: { label:'Sole Proprietor / Schedule C', tax:'Income on your personal return (Schedule C). SE tax applies on net profit.', complexity:'Low' },
+    smllc:     { label:'Single-Member LLC', tax:'Taxed like a sole prop by default (disregarded entity). Income on Schedule C unless you elect S-Corp status.', complexity:'Low–Medium' },
+    scorp:     { label:'S-Corporation', tax:'Two returns required: Form 1120-S for the business + personal 1040. You must pay yourself a reasonable salary (W-2) and take remaining profit as distributions.', complexity:'High' },
+    partner:   { label:'Partnership / Multi-Member LLC', tax:'Business files Form 1065. Partners receive K-1s and report their share on personal returns.', complexity:'High' },
+    ccorp:     { label:'C-Corporation', tax:'Double taxation: corp pays tax on profits (Form 1120), then you pay personal tax on dividends or salary. Most small businesses avoid this structure.', complexity:'Very High' },
+    not_sure:  { label:'Not sure yet', tax:"Answer a few more questions and we'll give you our best read.", complexity:'Unknown' },
+  };
+  const entityInfo = ENTITY_INFO[d.bizEntity] || null;
+  const entityLabel = entityInfo ? entityInfo.label : null;
 
   const filtered=catFilter?BIZ_TYPES.filter(b=>b.cat===catFilter):BIZ_TYPES;
 
@@ -553,11 +585,30 @@ function BizSection({d,upd}){
       </div>
     )}
     <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)'}}>Your business setup:</div>
-    <TileG hint="Are you the only owner?" val={d.bizOnly?'solo':'multi'} onChange={v=>upd('bizOnly',v==='solo')} cols={2} sm opts={[{v:'solo',label:'Just me',Icon:Briefcase},{v:'multi',label:'Co-owners',Icon:Users}]}/>
-    <TileG hint="Did you officially register it?" val={d.bizReg?'yes':'no'} onChange={v=>upd('bizReg',v==='yes')} cols={2} sm opts={[{v:'no',label:'Not really',Icon:Edit2},{v:'yes',label:'Yes, registered',Icon:Building2}]}/>
-    <TileG hint="How do you pay yourself?" val={d.bizSal?'salary':'draw'} onChange={v=>upd('bizSal',v==='salary')} cols={2} sm opts={[{v:'draw',label:"Owner's draw",Icon:DollarSign},{v:'salary',label:'W-2 salary',Icon:Briefcase}]}/>
-    {d.bizSal&&<div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'#78350F',display:'flex',gap:5,alignItems:'flex-start'}}><Info size={12} style={{flexShrink:0,marginTop:1}}/>W-2 salary = two tax returns (biz + personal). Flagged in your complexity score.</div>}
-    {entityLabel&&<div style={{background:'var(--teal-lt)',border:'1.5px solid var(--teal)',borderRadius:'var(--r-lg)',padding:'8px 12px'}}><div style={{fontWeight:700,fontSize:'.82rem',color:'var(--teal)'}}>Detected: {entityLabel}</div><div style={{fontSize:'.72rem',color:'var(--teal)',opacity:.85,marginTop:2}}>{entityLabel==='Sole Proprietor'?'Income flows straight to your personal return.':entityLabel.includes('LLC')&&!d.bizSal?'Treated like a solo operation — income on your personal return.':'Two separate returns involved.'}</div></div>}
+    <div>
+      <label style={{fontSize:'.8rem',fontWeight:700,color:'var(--ink2)',marginBottom:6,display:'block'}}>What is your business structure?</label>
+      <div style={{display:'flex',flexDirection:'column',gap:5}}>
+        {[
+          {v:'sole_prop', label:'Sole Proprietor / Schedule C', sub:'Just you, no formal business entity — most freelancers & contractors'},
+          {v:'smllc',     label:'Single-Member LLC', sub:'You formed an LLC with just yourself as the owner'},
+          {v:'scorp',     label:'S-Corporation', sub:'You elected S-Corp status and pay yourself a W-2 salary'},
+          {v:'partner',   label:'Partnership / Multi-Member LLC', sub:'2+ owners sharing profits via K-1s'},
+          {v:'ccorp',     label:'C-Corporation', sub:'Separate taxable entity (Form 1120) — uncommon for small biz'},
+          {v:'not_sure',  label:"I'm not sure", sub:"We'll make our best estimate based on your other answers"},
+        ].map(o=>{
+          const sel=d.bizEntity===o.v;
+          return(<button key={o.v} onClick={()=>upd('bizEntity',o.v)} style={{background:sel?'var(--teal-lt)':'var(--white)',border:`1.5px solid ${sel?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r)',padding:'9px 12px',cursor:'pointer',textAlign:'left',transition:'all .13s',boxShadow:sel?'0 0 0 3px rgba(11,122,109,.06)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.background='var(--teal-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}} >
+            <div style={{fontWeight:700,fontSize:'.83rem',color:sel?'var(--teal)':'var(--ink)'}}>{o.label}</div>
+            <div style={{fontSize:'.71rem',color:sel?'var(--teal)':'var(--ink3)',marginTop:2}}>{o.sub}</div>
+          </button>);
+        })}
+      </div>
+    </div>
+    {entityInfo&&<div style={{background:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FFFBEB':'var(--teal-lt)',border:`1.5px solid ${entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FDE68A':'var(--teal)'}`,borderRadius:'var(--r-lg)',padding:'10px 13px'}}>
+      <div style={{fontWeight:700,fontSize:'.82rem',color:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold)':'var(--teal)',marginBottom:3}}>{entityInfo.label} — Tax treatment</div>
+      <div style={{fontSize:'.73rem',color:'var(--ink2)',lineHeight:1.65}}>{entityInfo.tax}</div>
+      <div style={{marginTop:5,fontSize:'.68rem',fontWeight:600,color:'var(--ink3)'}}>Filing complexity: {entityInfo.complexity}</div>
+    </div>}
     <TR label="Do you have W-2 employees?" checked={d.bizEmp} onChange={v=>upd('bizEmp',v)}/>
     <Sld label="Annual business revenue" val={d.bizRev} min={0} max={2000000} step={5000} onChange={v=>upd('bizRev',v)}/>
     <Sld label="Payroll (employees + your own salary if on W-2)" val={d.bizPay} min={0} max={1000000} step={5000} onChange={v=>upd('bizPay',v)}/>
@@ -633,7 +684,7 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
     </div>}
   </>);
 })()}
-<div style={{marginTop:8,paddingTop:7,borderTop:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:'.69rem',color:'var(--ink3)'}}>Complexity</span><Chip color={cx.color} bg={cx.bg}>{cx.label}</Chip></div></div>
+<div style={{marginTop:8,paddingTop:7,borderTop:'1px solid var(--border)',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontSize:'.69rem',color:'var(--ink3)'}}>Complexity</span><Chip color={cx.color} bg={cx.bg}>{cx.label}</Chip></div>{!NT.has(data.st)&&<div style={{marginTop:6,fontSize:'.67rem',color:'var(--ink3)',lineHeight:1.5,fontStyle:'italic'}}>⚠ State tax is estimated using a single effective rate. Graduated brackets, local taxes, and state-specific credits are not modeled.</div>}</div>
       </div>
       <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1.25rem',marginBottom:'1rem'}}>
         <div style={{fontWeight:700,fontSize:'.875rem',marginBottom:3}}>How confident do you feel about filing?</div>
@@ -655,8 +706,8 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
         </div>
         <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',marginBottom:'.625rem',lineHeight:1.6,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/><span><strong>About costs:</strong> These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></span></div>
         <div style={{display:'flex',flexDirection:'column',gap:7}}>
-          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>setOpenPath(openPath===p.id?null:p.id)} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
-          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(11,122,109,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='var(--border)';}}>
+          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>{const newPath=openPath===p.id?null:p.id;setOpenPath(newPath);if(newPath)track('filing_path_selected',{path:p.id,is_suggested:isSuggested,complexity:cx.level});}} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.72rem',color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
+          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(11,122,109,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onClick={()=>track('product_clicked',{product:pr.n,path:p.id,rank:i+1,complexity:cx.level})} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='var(--border)';}}>
             <div style={{width:34,height:34,borderRadius:8,background:`${pr.c}15`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.15rem',flexShrink:0,border:`1px solid ${pr.c}22`,marginTop:1}}>{pr.em}</div>
             <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={pr.c} bg={`${pr.c}15`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid rgba(11,122,109,.2)',paddingTop:4}}>{pr.detail}</div>}</div>
             <div style={{textAlign:'right',flexShrink:0,paddingLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.78rem',whiteSpace:'nowrap'}}>{pr.price}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',marginTop:2,display:'flex',alignItems:'center',gap:2,justifyContent:'flex-end'}}><ArrowRight size={8}/>Visit</div></div>
@@ -744,8 +795,24 @@ export default function App(){
 
   useEffect(()=>{const el=document.createElement('style');el.textContent=CSS;document.head.prepend(el);return()=>el.remove();},[]);
   const reset=useCallback(()=>{setD({...D0});setOp({...OP0});setStarted(false);setDrawerOpen(false);setSelectedPersona(null);setDrawerDismissed(false);},[]);
-  const load=p=>{setD({...D0,...p.data,bizExp:p.data.bizExp||{},seExp:{}});setOp({...OP0});setSelectedPersona(p.id);setStarted(true);};
-  const startOwn=()=>{setD({...D0});setOp({...OP0});setSelectedPersona(null);setStarted(true);};
+
+  // Track when estimate becomes meaningful (first time gross > 0)
+  const hasTrackedEstimate = useRef(false);
+  useEffect(()=>{
+    if(calc.gross>0&&started&&!hasTrackedEstimate.current){
+      hasTrackedEstimate.current=true;
+      track('estimate_completed',{
+        result:calc.res<-1?'refund':calc.res>1?'owed':'even',
+        amount:Math.round(Math.abs(calc.res)),
+        complexity:getCx(d).level,
+        income_types:d.wt.join(','),
+        state:d.st,
+      });
+    }
+    if(!calc.gross) hasTrackedEstimate.current=false;
+  },[calc.gross,started]);
+  const load=p=>{setD({...D0,...p.data,bizExp:p.data.bizExp||{},seExp:{}});setOp({...OP0});setSelectedPersona(p.id);setStarted(true);track('persona_selected',{persona_id:p.id,persona_name:p.name,persona_role:p.role});};
+  const startOwn=()=>{setD({...D0});setOp({...OP0});setSelectedPersona(null);setStarted(true);track('start_own_estimate');};
   const hasW2=d.wt.includes('w2'),hasSE=d.wt.includes('se'),hasBiz=d.wt.includes('biz'),hasRet=d.wt.includes('ret');
   const doneWork=d.wt.length>0&&d.st&&d.age;
   const doneInc=calc.gross>0;
@@ -908,7 +975,7 @@ export default function App(){
             </div>}
             {hasSE&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
               <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><DollarSign size={11}/>Freelance / 1099</div>
-              <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={300000} step={1000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
+              <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={1000000} step={1000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
               <Bx>
                 <div style={{fontSize:'.74rem',fontWeight:700,color:'var(--ink2)'}}>Core business expenses:</div>
                 <Sld label="Vehicle / mileage" val={d.seV} min={0} max={30000} step={200} onChange={v=>upd('seV',v)} tip="IRS mileage: $0.70/mile in 2025."/>
@@ -924,6 +991,16 @@ export default function App(){
               <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><PiggyBank size={11}/>Retirement Income</div>
               <Sld label="SS, pensions, IRA withdrawals, etc." val={d.otherInc||0} min={0} max={200000} step={1000} onChange={v=>upd('otherInc',v)} tip="Up to 85% of Social Security may be taxable depending on total income."/>
               <Sld label="Tax already withheld" val={d.wh} min={0} max={60000} step={500} onChange={v=>upd('wh',v)}/>
+            </div>}
+            {/* Capital Gains — shown for all filers */}
+            {d.wt.length>0&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+              <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Capital Gains</div>
+              <Sld label="Long-term capital gains" val={d.capGainLT||0} min={0} max={500000} step={1000} onChange={v=>upd('capGainLT',v)} tip={d.capGainLT>0?"Long-term gains (assets held 12+ months) are taxed at 0%, 15%, or 20% — much lower than ordinary income rates. Your rate depends on your total taxable income.":undefined}/>
+              <Sld label="Short-term capital gains" val={d.capGainST||0} min={0} max={300000} step={1000} onChange={v=>upd('capGainST',v)} tip={d.capGainST>0?"Short-term gains (assets held under 12 months) are taxed as ordinary income — same as your salary.":undefined}/>
+              {(d.capGainLT>0||d.capGainST>0)&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'8px 11px',fontSize:'.74rem',color:'var(--teal)',lineHeight:1.65}}>
+                {d.capGainLT>0&&<div><strong>Long-term rate:</strong> {(()=>{const ti=(d.w2||0)+(d.sw2||0)-Math.min(d.r401k||0,23500);return ti<47025?'0% — you qualify for the lowest bracket!':ti<518900?'15%':'20%';})()}</div>}
+                {d.capGainST>0&&<div style={{marginTop:d.capGainLT>0?4:0}}><strong>Short-term:</strong> Taxed as ordinary income at your marginal rate</div>}
+              </div>}
             </div>}
           </div>}
         </DCard>
@@ -1114,7 +1191,7 @@ export default function App(){
             {started&&<button onClick={reset} style={{flexShrink:0,background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.12)',borderRadius:'var(--r)',padding:'11px 13px',cursor:'pointer',display:'flex',alignItems:'center',gap:5,color:'rgba(255,255,255,.55)',fontSize:'.8rem',fontWeight:600,transition:'all .15s',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,.13)';e.currentTarget.style.color='white';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,.07)';e.currentTarget.style.color='rgba(255,255,255,.55)';}}>
               <RefreshCw size={12}/>Reset
             </button>}
-            <button onClick={()=>setDrawerOpen(true)} style={{flex:1,background:'var(--coral)',color:'white',border:'none',borderRadius:'var(--r)',padding:'12px',fontWeight:700,fontSize:'.9rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,boxShadow:'0 2px 8px rgba(224,78,26,.4)',transition:'opacity .14s'}} onMouseEnter={e=>e.currentTarget.style.opacity='.88'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+            <button onClick={()=>{setDrawerOpen(true);track('full_breakdown_opened',{estimated_result:isR?'refund':isO?'owed':'even',amount:Math.round(amt),complexity:cx.level});}} style={{flex:1,background:'var(--coral)',color:'white',border:'none',borderRadius:'var(--r)',padding:'12px',fontWeight:700,fontSize:'.9rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,boxShadow:'0 2px 8px rgba(224,78,26,.4)',transition:'opacity .14s'}} onMouseEnter={e=>e.currentTarget.style.opacity='.88'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
               <TrendingUp size={14}/>Full breakdown + filing options ↑
             </button>
           </div>
