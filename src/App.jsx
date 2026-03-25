@@ -339,8 +339,109 @@ function detectBizType(desc=''){
 // ─── STATIC DATA ──────────────────────────────────────────────────
 const STATES=['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 const SN={AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'Washington D.C.',FL:'Florida',GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'};
+// ─── STATE INCOME TAX DATA (graduated brackets) ────────────────────────────
+// Source: Tax Foundation 2025/2026, state revenue departments
+// Format per state: {s:[lo,hi,rate], m:[lo,hi,rate], loc:localRate}
+//   s = single/HoH brackets, m = MFJ brackets (if different), loc = mandatory local tax added
+//   Flat rate states: {s:[[0,9e8,rate]]}
+//   No-tax states: not in object (check NT set)
 const NT=new Set(['TX','FL','NV','WA','WY','SD','AK','TN','NH']);
-const SR={CA:.072,NY:.065,NJ:.068,OR:.079,MN:.069,DC:.085,IL:.049,WI:.054,MA:.05,VA:.057,GA:.054,NC:.045,CO:.044,AZ:.025,MI:.043,OH:.038,PA:.031,IN:.031,MO:.048,IA:.044,KS:.042,SC:.05,AR:.049,AL:.042,LA:.045,KY:.045,MD:.058,CT:.065,RI:.055,DE:.058,HI:.082,TX:0,FL:0,NV:0,WA:0,WY:0,SD:0,AK:0,TN:0,NH:0,MT:.067,NE:.068,MS:.047,OK:.045,UT:.046,WV:.065,VT:.087,ME:.075,ID:.058,NM:.049,ND:.025};
+const STATE_TAX={
+ 2025:{
+  // ── FLAT RATE STATES ──────────────────────────────────────────────────────
+  AZ:{s:[[0,9e8,.025]]},
+  CO:{s:[[0,9e8,.044]]},
+  GA:{s:[[0,9e8,.0519]]},
+  ID:{s:[[0,9e8,.053]]},
+  IL:{s:[[0,9e8,.0495]]},
+  IN:{s:[[0,9e8,.030]]},
+  IA:{s:[[0,9e8,.038]]},
+  KY:{s:[[0,9e8,.040]]},
+  LA:{s:[[0,9e8,.030]]},
+  MA:{s:[[0,1e6,.05],[1e6,9e8,.09]]},  // 5% + 4% millionaire surtax
+  MI:{s:[[0,9e8,.0425]]},
+  MS:{s:[[0,9e8,.044]]},
+  NC:{s:[[0,9e8,.0425]]},
+  PA:{s:[[0,9e8,.0307]]},
+  UT:{s:[[0,9e8,.045]]},
+  // ── GRADUATED STATES ─────────────────────────────────────────────────────
+  AL:{s:[[0,500,.02],[500,3e3,.04],[3e3,9e8,.05]],m:[[0,1e3,.02],[1e3,6e3,.04],[6e3,9e8,.05]]},
+  AR:{s:[[0,4400,.02],[4400,8800,.04],[8800,9e8,.044]]},
+  CA:{
+   s:[[0,10756,.01],[10756,25499,.02],[25499,40245,.04],[40245,55866,.06],[55866,70606,.08],
+      [70606,360659,.093],[360659,432787,.103],[432787,721314,.113],[721314,1e6,.123],[1e6,9e8,.133]],
+   m:[[0,21512,.01],[21512,50998,.02],[50998,80490,.04],[80490,111732,.06],[111732,141212,.08],
+      [141212,721318,.093],[721318,865574,.103],[865574,1e6,.113],[1e6,1442628,.123],[1442628,9e8,.133]]},
+  CT:{s:[[0,1e4,.02],[1e4,5e4,.045],[5e4,1e5,.055],[1e5,2e5,.06],[2e5,25e4,.065],[25e4,5e5,.069],[5e5,9e8,.0699]],
+      m:[[0,2e4,.02],[2e4,1e5,.045],[1e5,2e5,.055],[2e5,4e5,.06],[4e5,5e5,.065],[5e5,1e6,.069],[1e6,9e8,.0699]]},
+  DC:{s:[[0,1e4,.04],[1e4,4e4,.06],[4e4,6e4,.065],[6e4,25e4,.085],[25e4,5e5,.0925],[5e5,1e6,.0975],[1e6,9e8,.1075]]},
+  DE:{s:[[0,2e3,0],[2e3,5e3,.022],[5e3,1e4,.039],[1e4,2e4,.048],[2e4,25e3,.052],[25e3,6e4,.0555],[6e4,9e8,.066]]},
+  HI:{s:[[0,9600,.014],[9600,16800,.032],[16800,24e3,.055],[24e3,32e3,.064],[32e3,4e4,.068],
+         [4e4,6e4,.072],[6e4,8e4,.076],[8e4,1e5,.079],[1e5,125e3,.0825],[125e3,15e4,.09],[15e4,325e3,.10],[325e3,9e8,.11]],
+      m:[[0,19200,.014],[19200,33600,.032],[33600,48e3,.055],[48e3,64e3,.064],[64e3,8e4,.068],
+         [8e4,12e4,.072],[12e4,16e4,.076],[16e4,2e5,.079],[2e5,25e4,.0825],[25e4,3e5,.09],[3e5,65e4,.10],[65e4,9e8,.11]]},
+  KS:{s:[[0,15e3,.052],[15e3,9e8,.0558]],m:[[0,3e4,.052],[3e4,9e8,.0558]]},
+  MD:{s:[[0,1e3,.02],[1e3,2e3,.03],[2e3,3e3,.04],[3e3,1e5,.0475],[1e5,125e3,.05],
+         [125e3,15e4,.0525],[15e4,25e4,.055],[25e4,3e5,.0575],[3e5,1e6,.0625],[1e6,9e8,.065]],
+      loc:.025},   // mandatory county/local tax, avg 2.5%
+  ME:{s:[[0,26050,.058],[26050,61600,.0675],[61600,9e8,.0715]],
+      m:[[0,52100,.058],[52100,123250,.0675],[123250,9e8,.0715]]},
+  MN:{s:[[0,31690,.0535],[31690,104090,.068],[104090,198630,.0785],[198630,9e8,.0985]],
+      m:[[0,46330,.0535],[46330,184040,.068],[184040,330410,.0785],[330410,9e8,.0985]]},
+  MO:{s:[[0,1207,.015],[1207,2414,.02],[2414,3621,.025],[3621,4828,.03],[4828,6035,.035],[6035,7242,.04],[7242,9999,.045],[9999,9e8,.047]]},
+  MT:{s:[[0,20500,.047],[20500,9e8,.059]],m:[[0,41e3,.047],[41e3,9e8,.059]]},
+  NE:{s:[[0,3700,.0246],[3700,22170,.0351],[22170,35730,.0501],[35730,9e8,.052]],
+      m:[[0,7390,.0246],[7390,44350,.0351],[44350,71470,.0501],[71470,9e8,.052]]},
+  NJ:{s:[[0,2e4,.014],[2e4,35e3,.0175],[35e3,4e4,.035],[4e4,75e3,.05525],[75e3,5e5,.0637],[5e5,1e6,.0897],[1e6,9e8,.1075]],
+      m:[[0,2e4,.014],[2e4,5e4,.0175],[5e4,7e4,.0245],[7e4,8e4,.035],[8e4,15e4,.05525],[15e4,5e5,.0637],[5e5,1e6,.0897],[1e6,9e8,.1075]]},
+  NM:{s:[[0,5500,.015],[5500,11e3,.032],[11e3,33500,.043],[33500,21e4,.047],[21e4,9e8,.059]]},
+  NY:{s:[[0,17150,.04],[17150,23600,.045],[23600,27900,.0525],[27900,161550,.055],
+         [161550,323200,.06],[323200,2155350,.0685],[2155350,5e6,.0965],[5e6,25e6,.103],[25e6,9e8,.109]],
+      m:[[0,27900,.04],[27900,43000,.045],[43000,161550,.0525],[161550,323200,.055],
+         [323200,2155350,.06],[2155350,5e6,.0685],[5e6,25e6,.0965],[25e6,9e8,.103]]},
+  ND:{s:[[0,44725,.011],[44725,9e8,.025]],m:[[0,74750,.011],[74750,9e8,.025]]},
+  OH:{s:[[0,26050,.0275],[26050,9e8,.035]]},
+  OK:{s:[[0,1e3,.0025],[1e3,2500,.0075],[2500,3750,.0175],[3750,4900,.0275],[4900,7200,.0375],[7200,9e8,.0475]]},
+  OR:{s:[[0,4050,.0475],[4050,10200,.0675],[10200,125e3,.0875],[125e3,9e8,.099]],
+      m:[[0,8100,.0475],[8100,20400,.0675],[20400,25e4,.0875],[25e4,9e8,.099]]},
+  RI:{s:[[0,77450,.0375],[77450,176050,.0475],[176050,9e8,.0599]],
+      m:[[0,154900,.0375],[154900,352100,.0475],[352100,9e8,.0599]]},
+  SC:{s:[[0,3460,0],[3460,6930,.03],[6930,10390,.04],[10390,13860,.05],[13860,9e8,.06]]},
+  VA:{s:[[0,3e3,.02],[3e3,5e3,.03],[5e3,17e3,.05],[17e3,9e8,.0575]]},
+  VT:{s:[[0,45400,.0335],[45400,110050,.066],[110050,229550,.076],[229550,9e8,.0875]],
+      m:[[0,75850,.0335],[75850,183400,.066],[183400,236350,.076],[236350,9e8,.0875]]},
+  WI:{s:[[0,14320,.035],[14320,28640,.044],[28640,315310,.053],[315310,9e8,.0765]],
+      m:[[0,19090,.035],[19090,38190,.044],[38190,420420,.053],[420420,9e8,.0765]]},
+  WV:{s:[[0,10e3,.0236],[10e3,25e3,.0315],[25e3,4e4,.0354],[4e4,6e4,.0472],[6e4,9e8,.0482]]},
+ },
+ 2026:{
+  // Only states with changes from 2025; all others inherit from STATE_TAX[2025]
+  CO:{s:[[0,9e8,.04]]},                           // drops from 4.4% to 4.0%
+  MS:{s:[[0,9e8,.04]]},                            // drops from 4.4% to 4.0%
+  MT:{s:[[0,20500,.047],[20500,9e8,.0565]],m:[[0,41e3,.047],[41e3,9e8,.0565]]}, // top 5.9%→5.65%
+  NC:{s:[[0,9e8,.0399]]},                          // drops from 4.25% to 3.99%
+  OH:{s:[[0,9e8,.0275]]},                          // becomes flat 2.75%
+  OK:{s:[[0,2500,.025],[2500,7500,.035],[7500,9e8,.045]]}, // 3 brackets, top 4.5%
+ }
+};
+
+// State tax calculation — uses graduated brackets or flat rate, applies local tax where mandatory
+function calcStateTax(agi, st, fs, year) {
+  if (!st || NT.has(st)) return 0;
+  const yr2025 = STATE_TAX[2025];
+  const yr2026 = STATE_TAX[2026] || {};
+  // Merge: 2026 overrides where changed, else use 2025
+  const stData = (year === 2026 && yr2026[st]) ? yr2026[st] : yr2025[st];
+  if (!stData) return agi * 0.045; // fallback for any missing state
+  const bkts = (fs === 'mfj' || fs === 'mfs') && stData.m ? stData.m : stData.s;
+  let tax = 0;
+  for (const [lo, hi, r] of bkts) { if (agi > lo) tax += Math.min(agi - lo, hi - lo) * r; }
+  if (stData.loc) tax += agi * stData.loc; // mandatory local (MD)
+  return tax;
+}
+
+// ── Preserve NT for UI (no-income-tax badge) ─────────────────────
+// NT already declared above in STATE_TAX block
 
 const PERSONAS=[
   {id:'teacher',name:'Jamie',role:'Teacher',loc:'CA',data:{wt:['w2'],st:'CA',age:'30-44',fs:'single',w2:58000,wh:7400,r401k:4000,sloan:2200}},
@@ -483,11 +584,12 @@ function calcTax(d, year=2025){
   if((d.edu||0)>0)cr+=Math.min(d.edu,10000)*.25;
   const uC=Math.min(cr,fT);
   const nF=Math.max(0,fT-uC);
-  const stR=SR[d.st]??0.045;
-  const stT=agi*stR;
-  const tot=nF+seTax+stT;
+  const stT=calcStateTax(agi,d.st,fs,year);
+  const nycT=(d.nycResident&&d.st==='NY')?agi*0.034:0; // NYC avg 3.4%
+  const stTfinal=stT+nycT;
+  const tot=nF+seTax+stTfinal;
   const paid=(d.wh||0)+(d.estP||0);
-  return{gross,agi,taxable,fT,nF,uC,seTax,stT,tot,paid,res:tot-paid,eff:gross>0?tot/gross:0,mg,sd,item,useItem,ded,adj,seNet,bizNet,seniorDed,a65bonus};
+  return{gross,agi,taxable,fT,nF,uC,seTax,stT:stTfinal,tot,paid,res:tot-paid,eff:gross>0?tot/gross:0,mg,sd,item,useItem,ded,adj,seNet,bizNet,seniorDed,a65bonus};
 }
 
 function getCx(d){
@@ -502,7 +604,7 @@ function getCx(d){
 }
 function gFC(cx,p){const t={diy:{low:'$0–$30',med:'$0–$100',high:'$50–$150',vhigh:'$100–$200'},assist:{low:'$50–$150',med:'$100–$300',high:'$200–$450',vhigh:'$300–$550'},pro:{low:'$150–$300',med:'$250–$500',high:'$400–$900',vhigh:'$600–$2,000+'}};return t[p]?.[cx.level]||'—';}
 const fm=(n,s)=>{if(n==null)return'—';const a=Math.abs(Math.round(n));if(s&&a>=1000)return`$${Math.round(a/1000)}k`;return`$${a.toLocaleString()}`};
-const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizEntity:null,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0,capGainLT:0,capGainST:0};
+const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizEntity:null,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0,capGainLT:0,capGainST:0,nycResident:false};
 const OP0={work:true,hh:true,inc:true,sav:true,ded:true};
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────
@@ -944,6 +1046,8 @@ export default function App(){
             </div>
           </div>
           {d.st&&NT.has(d.st)&&<div style={{background:'var(--green-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--green)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><Check size={11}/>Zero state income tax in {SN[d.st]}</div>}
+          {d.st==='NY'&&<TR label="NYC resident?" sub="New York City adds 3.078%–3.876% on top of state tax" checked={d.nycResident||false} onChange={v=>upd('nycResident',v)}/>}
+          {d.st==='MD'&&<div style={{background:'var(--gold-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',display:'flex',gap:5,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/>Maryland has a mandatory county/local income tax (~2.5% avg) added to your estimate.</div>}
         </DCard>
         <DCard id="card-hh" title="Household" sub="Family affects deductions and credits" Icon={Users} open={op.hh} onToggle={()=>tog('hh')} done={doneHH} optional>
           <TileG val={d.fs} onChange={v=>{upd('fs',v);if(v==='single')upd('sw2',0);}} cols={2} opts={[{v:'single',label:'Single',sub:'Filing solo',Icon:Briefcase},{v:'mfj',label:'Married jointly',sub:'Usually better',Icon:Users},{v:'hoh',label:'Head of household',sub:'Single parent',Icon:Users},{v:'mfs',label:'Married separately',Icon:Briefcase}]}/>
@@ -975,7 +1079,7 @@ export default function App(){
             </div>}
             {hasSE&&<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
               <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><DollarSign size={11}/>Freelance / 1099</div>
-              <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={1000000} step={1000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
+              <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={5000000} step={5000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
               <Bx>
                 <div style={{fontSize:'.74rem',fontWeight:700,color:'var(--ink2)'}}>Core business expenses:</div>
                 <Sld label="Vehicle / mileage" val={d.seV} min={0} max={30000} step={200} onChange={v=>upd('seV',v)} tip="IRS mileage: $0.70/mile in 2025."/>

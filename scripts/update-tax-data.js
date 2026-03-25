@@ -116,8 +116,22 @@ Return ONLY a JSON object (no markdown, no explanation, just raw JSON) with thes
     {"icon": "emoji", "title": "short title", "detail": "one line detail with numbers"}
   ],
   "confidence": "high|medium|low",
-  "notes": "any caveats or pending legislation"
+  "notes": "any caveats or pending legislation",
+  "state_tax_changes": [
+    {
+      "state": "XX",
+      "type": "flat|graduated",
+      "rate_or_top_bracket": NUMBER,
+      "brackets_single": [[lo, hi, rate], ...],
+      "brackets_mfj": [[lo, hi, rate], ...],
+      "change_from_prior_year": "brief description"
+    }
+  ]
 }
+
+For state_tax_changes: Research any STATE INCOME TAX RATE CHANGES that take effect in ${targetYear}.
+Check Tax Foundation (taxfoundation.org) for their annual state income tax rate update.
+Only include states that have CHANGED their rates or brackets from the prior year.
 
 IMPORTANT: Use exact numbers from official IRS sources only. If you cannot find official data for a field, use null. Do not guess.`;
 
