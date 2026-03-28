@@ -446,14 +446,14 @@ function calcStateTax(agi, st, fs, year) {
 const PERSONAS=[
   {id:'teacher',name:'Jamie',role:'Teacher',loc:'CA',data:{wt:['w2'],st:'CA',age:'30-44',fs:'single',w2:58000,wh:7400,r401k:4000,sloan:2200}},
   {id:'engineer',name:'Alex',role:'Software Engineer',loc:'TX',data:{wt:['w2'],st:'TX',age:'30-44',fs:'mfj',w2:140000,sw2:40000,wh:30000,r401k:23500,home:true,mort:true,mortInt:18000,salt:8000}},
-  {id:'designer',name:'Morgan',role:'Freelance Designer',loc:'NY',data:{wt:['se'],st:'NY',age:'30-44',fs:'single',seInc:75000,seH:4800,seE:2800,seO:2000,estP:8000,ira:7000}},
+  {id:'designer',name:'Morgan',role:'Freelance Designer',loc:'NY',data:{wt:['se'],st:'NY',age:'30-44',fs:'single',seInc:75000,seH:4800,seE:2800,seO:2000,estP:8000,ira:7000,bizQ1:'solo',bizQ2:'no',bizEntity:'sole_prop'}},
   {id:'electrician',name:'Dave',role:'Electrician',loc:'NV',data:{wt:['w2'],st:'NV',age:'30-44',fs:'mfj',w2:72000,wh:9000,r401k:10000,kids:2,cc:true,ccAmt:8500}},
-  {id:'nurse',name:'Maya',role:'RN + Side Shifts',loc:'FL',data:{wt:['w2','se'],st:'FL',age:'30-44',fs:'single',w2:68000,wh:9000,seInc:18000,estP:2000,r401k:6000,sloan:2500}},
+  {id:'nurse',name:'Maya',role:'RN + Side Shifts',loc:'FL',data:{wt:['w2','se'],st:'FL',age:'30-44',fs:'single',w2:68000,wh:9000,seInc:18000,estP:2000,r401k:6000,sloan:2500,bizQ1:'solo',bizQ2:'no',bizEntity:'sole_prop'}},
   {id:'lawyer',name:'Chris',role:'Attorney',loc:'DC',data:{wt:['w2'],st:'DC',age:'45-64',fs:'mfj',w2:280000,sw2:95000,wh:98000,r401k:23500,home:true,mort:true,mortInt:28000,salt:40000,charity:12000,kids:1}},
-  {id:'restaurant',name:'Sofia',role:'Restaurant Owner',loc:'IL',data:{wt:['biz'],st:'IL',age:'45-64',fs:'mfj',bizSal:false,bizEmp:true,bizOnly:true,bizReg:true,bizDesc:'restaurant owner',bizRev:650000,bizPay:280000,bizExp:{food_cost:195000,equip10:8000,pos:2500,licenses2:3000},estP:5000,wh:0,kids:2}},
-  {id:'driver',name:'Marcus',role:'Rideshare Driver',loc:'GA',data:{wt:['se'],st:'GA',age:'under30',fs:'single',seInc:42000,bizDesc:'rideshare driver uber',bizExp:{mileage:11000,phone2:800,data:800,fees:3000},estP:0}},
+  {id:'restaurant',name:'Sofia',role:'Restaurant Owner',loc:'IL',data:{wt:['biz'],st:'IL',age:'45-64',fs:'mfj',bizSal:false,bizEmp:true,bizOnly:true,bizReg:true,bizDesc:'restaurant owner',bizRev:650000,bizPay:280000,bizExp:{food_cost:195000,equip10:8000,pos:2500,licenses2:3000},estP:5000,wh:0,kids:2,bizQ1:'solo',bizQ2:'yes',bizQ3:'llc',bizQ4:'no',bizEntity:'smllc'}},
+  {id:'driver',name:'Marcus',role:'Rideshare Driver',loc:'GA',data:{wt:['se'],st:'GA',age:'under30',fs:'single',seInc:42000,bizDesc:'rideshare driver uber',bizExp:{mileage:11000,phone2:800,data:800,fees:3000},estP:0,bizQ1:'solo',bizQ2:'no',bizEntity:'sole_prop'}},
   {id:'retired',name:'Linda & Bob',role:'Retired Couple',loc:'AZ',data:{wt:['ret'],st:'AZ',age:'65plus',fs:'mfj',otherInc:68000,wh:4200,estP:0}},
-  {id:'realtor',name:'Jordan',role:'Real Estate Agent',loc:'CO',data:{wt:['se'],st:'CO',age:'30-44',fs:'single',seInc:95000,estP:13000,ira:7000,home:true,mort:true,mortInt:14000,salt:6000,bizDesc:'real estate agent',bizExp:{mls:2500,mktg10:8000,vehicle19:7000,license20:1200,staging:3000}}},
+  {id:'realtor',name:'Jordan',role:'Real Estate Agent',loc:'CO',data:{wt:['se'],st:'CO',age:'30-44',fs:'single',seInc:95000,estP:13000,ira:7000,home:true,mort:true,mortInt:14000,salt:6000,bizDesc:'real estate agent',bizExp:{mls:2500,mktg10:8000,vehicle19:7000,license20:1200,staging:3000},bizQ1:'solo',bizQ2:'no',bizEntity:'sole_prop'}},
 ];
 
 const mkProds=(lvl)=>{
@@ -604,7 +604,7 @@ function getCx(d){
 }
 function gFC(cx,p){const t={diy:{low:'$0–$30',med:'$0–$100',high:'$50–$150',vhigh:'$100–$200'},assist:{low:'$50–$150',med:'$100–$300',high:'$200–$450',vhigh:'$300–$550'},pro:{low:'$150–$300',med:'$250–$500',high:'$400–$900',vhigh:'$600–$2,000+'}};return t[p]?.[cx.level]||'—';}
 const fm=(n,s)=>{if(n==null)return'—';const a=Math.abs(Math.round(n));if(s&&a>=1000)return`$${Math.round(a/1000)}k`;return`$${a.toLocaleString()}`};
-const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizEntity:null,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0,capGainLT:0,capGainST:0,nycResident:false};
+const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE:0,seO:0,seExp:{},estP:0,bizSal:false,bizOnly:true,bizReg:false,bizEmp:false,bizEntity:null,bizQ1:null,bizQ2:null,bizQ3:null,bizQ4:null,bizRev:0,bizPay:0,bizDesc:'',bizExp:{},bizTypeId:null,r401k:0,ira:0,hsa:0,sloan:0,seHI:0,kids:0,cc:false,ccAmt:0,home:false,mort:false,mortInt:0,salt:0,charity:0,edu:0,otherInc:0,capGainLT:0,capGainST:0,nycResident:false};
 const OP0={work:true,hh:true,inc:true,sav:true,ded:true};
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────
@@ -686,31 +686,73 @@ function BizSection({d,upd}){
         </div>
       </div>
     )}
-    <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--ink2)'}}>Your business setup:</div>
-    <div>
-      <label style={{fontSize:'.8rem',fontWeight:700,color:'var(--ink2)',marginBottom:6,display:'block'}}>What is your business structure?</label>
-      <div style={{display:'flex',flexDirection:'column',gap:5}}>
-        {[
-          {v:'sole_prop', label:'Sole Proprietor / Schedule C', sub:'Just you, no formal business entity — most freelancers & contractors'},
-          {v:'smllc',     label:'Single-Member LLC', sub:'You formed an LLC with just yourself as the owner'},
-          {v:'scorp',     label:'S-Corporation', sub:'You elected S-Corp status and pay yourself a W-2 salary'},
-          {v:'partner',   label:'Partnership / Multi-Member LLC', sub:'2+ owners sharing profits via K-1s'},
-          {v:'ccorp',     label:'C-Corporation', sub:'Separate taxable entity (Form 1120) — uncommon for small biz'},
-          {v:'not_sure',  label:"I'm not sure", sub:"We'll make our best estimate based on your other answers"},
-        ].map(o=>{
-          const sel=d.bizEntity===o.v;
-          return(<button key={o.v} onClick={()=>upd('bizEntity',o.v)} style={{background:sel?'var(--teal-lt)':'var(--white)',border:`1.5px solid ${sel?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r)',padding:'9px 12px',cursor:'pointer',textAlign:'left',transition:'all .13s',boxShadow:sel?'0 0 0 3px rgba(11,122,109,.06)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.background='var(--teal-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}} >
-            <div style={{fontWeight:700,fontSize:'.83rem',color:sel?'var(--teal)':'var(--ink)'}}>{o.label}</div>
-            <div style={{fontSize:'.71rem',color:sel?'var(--teal)':'var(--ink3)',marginTop:2}}>{o.sub}</div>
-          </button>);
-        })}
-      </div>
-    </div>
-    {entityInfo&&<div style={{background:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FFFBEB':'var(--teal-lt)',border:`1.5px solid ${entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FDE68A':'var(--teal)'}`,borderRadius:'var(--r-lg)',padding:'10px 13px'}}>
-      <div style={{fontWeight:700,fontSize:'.82rem',color:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold)':'var(--teal)',marginBottom:3}}>{entityInfo.label} — Tax treatment</div>
-      <div style={{fontSize:'.73rem',color:'var(--ink2)',lineHeight:1.65}}>{entityInfo.tax}</div>
-      <div style={{marginTop:5,fontSize:'.68rem',fontWeight:600,color:'var(--ink3)'}}>Filing complexity: {entityInfo.complexity}</div>
-    </div>}
+    <div style={{fontWeight:700,fontSize:'.82rem',color:'var(--ink2)',marginBottom:2}}>Your business setup:</div>
+    {/* Entity detection via conversational questions */}
+    {(()=>{
+      const q1=d.bizQ1; // 'solo' | 'partners'
+      const q2=d.bizQ2; // 'yes' | 'no' (registered entity?)
+      const q3=d.bizQ3; // 'llc' | 'corp' (what type?)
+      const q4=d.bizQ4; // 'yes' | 'no' (pay yourself W-2?)
+      // Derive entity from answers
+      const derived=(()=>{
+        if(!q1) return null;
+        if(q1==='partners') return q3==='corp'?'ccorp':q4==='yes'?'scorp':'partner';
+        if(q1==='solo'){
+          if(q2==='no') return 'sole_prop';
+          if(q2==='yes'){
+            if(q3==='corp') return q4==='yes'?'scorp':'ccorp';
+            return q4==='yes'?'scorp':'smllc';
+          }
+        }
+        return null;
+      })();
+      if(derived && derived!==d.bizEntity) setTimeout(()=>upd('bizEntity',derived),0);
+      const Opt=({val,current,field,label,sub})=>{
+        const sel=current===val;
+        return(<button onClick={()=>upd(field,val)} style={{background:sel?'var(--teal-lt)':'var(--white)',border:`1.5px solid ${sel?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r)',padding:'9px 12px',cursor:'pointer',textAlign:'left',flex:1,transition:'all .13s',boxShadow:sel?'0 0 0 3px rgba(11,122,109,.06)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.background='var(--teal-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}>
+          <div style={{fontWeight:700,fontSize:'.82rem',color:sel?'var(--teal)':'var(--ink)'}}>{label}</div>
+          {sub&&<div style={{fontSize:'.71rem',color:sel?'var(--teal)':'var(--ink3)',marginTop:2}}>{sub}</div>}
+        </button>);
+      };
+      return(<div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {/* Q1: Sole owner? */}
+        <div>
+          <div style={{fontSize:'.78rem',fontWeight:600,color:'var(--ink2)',marginBottom:6}}>Are you the only owner of this business?</div>
+          <div style={{display:'flex',gap:6}}><Opt val="solo" current={q1} field="bizQ1" label="Yes, just me"/><Opt val="partners" current={q1} field="bizQ1" label="No, I have co-owners or partners"/></div>
+        </div>
+        {/* Q2: Registered entity? (solo only) */}
+        {q1==='solo'&&<div>
+          <div style={{fontSize:'.78rem',fontWeight:600,color:'var(--ink2)',marginBottom:6}}>Did you officially register a business entity?</div>
+          <div style={{display:'flex',gap:6}}>
+            <Opt val="no" current={q2} field="bizQ2" label="No" sub="I operate under my own name / as a freelancer"/>
+            <Opt val="yes" current={q2} field="bizQ2" label="Yes" sub="I filed paperwork with the state (LLC, Corp, etc.)"/>
+          </div>
+        </div>}
+        {/* Q3: LLC or Corp? */}
+        {((q1==='solo'&&q2==='yes')||q1==='partners')&&<div>
+          <div style={{fontSize:'.78rem',fontWeight:600,color:'var(--ink2)',marginBottom:6}}>What type of entity did you register?</div>
+          <div style={{display:'flex',gap:6}}>
+            <Opt val="llc" current={q3} field="bizQ3" label="LLC" sub="Limited Liability Company"/>
+            <Opt val="corp" current={q3} field="bizQ3" label="Corporation" sub="Inc. or Corp — including S-Corp elections"/>
+          </div>
+        </div>}
+        {/* Q4: W-2 salary to yourself? */}
+        {(q3==='corp'||(q1==='partners'&&q3==='llc'))&&<div>
+          <div style={{fontSize:'.78rem',fontWeight:600,color:'var(--ink2)',marginBottom:6}}>Do you pay yourself a W-2 salary from the business?</div>
+          <div style={{display:'flex',gap:6}}>
+            <Opt val="yes" current={q4} field="bizQ4" label="Yes" sub="I'm on payroll as an employee of my own business"/>
+            <Opt val="no" current={q4} field="bizQ4" label="No" sub="I take distributions or draws only"/>
+          </div>
+        </div>}
+        {/* Result */}
+        {derived&&entityInfo&&<div style={{background:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FFFBEB':'var(--teal-lt)',border:`1.5px solid ${entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FDE68A':'var(--teal)'}`,borderRadius:'var(--r-lg)',padding:'10px 13px'}}>
+          <div style={{fontWeight:700,fontSize:'.82rem',color:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold)':'var(--teal)',marginBottom:3}}>Detected: {entityInfo.label}</div>
+          <div style={{fontSize:'.73rem',color:'var(--ink2)',lineHeight:1.65}}>{entityInfo.tax}</div>
+          <div style={{marginTop:5,fontSize:'.68rem',fontWeight:600,color:'var(--ink3)'}}>Filing complexity: {entityInfo.complexity}</div>
+        </div>}
+      </div>);
+    })()}
+    
     <TR label="Do you have W-2 employees?" checked={d.bizEmp} onChange={v=>upd('bizEmp',v)}/>
     <Sld label="Annual business revenue" val={d.bizRev} min={0} max={20000000} step={50000} onChange={v=>upd('bizRev',v)}/>
     <Sld label="Payroll (employees + your own salary if on W-2)" val={d.bizPay} min={0} max={10000000} step={50000} onChange={v=>upd('bizPay',v)}/>
@@ -1189,8 +1231,8 @@ export default function App(){
             <span style={{fontSize:'.73rem',color:'var(--ink3)'}}>vs Itemized: <strong style={{color:calc.useItem?'var(--teal)':'var(--ink)'}}>{fm(calc.item)}</strong></span>
             <Chip color={calc.useItem?'var(--teal)':'var(--coral)'} bg={calc.useItem?'var(--teal-lt)':'var(--coral-lt)'}>{calc.useItem?'Itemized':'Standard'} ✓</Chip>
           </div>
-          <TR label="Do you own a home?" checked={d.home} onChange={v=>upd('home',v)}/>
-          {d.home&&<Bx><TR label="Have a mortgage?" checked={d.mort} onChange={v=>upd('mort',v)}/>{d.mort&&<Sld label="Mortgage interest paid" val={d.mortInt} min={0} max={100000} step={500} onChange={v=>upd('mortInt',v)} tip="Check your 1098 from your lender."/>}</Bx>}
+          <TR label="Do you own a home?" checked={d.home} onChange={v=>{upd('home',v);if(!v){upd('mort',false);upd('mortInt',0);}}}/>
+          {d.home&&<Bx><TR label="Have a mortgage?" checked={d.mort} onChange={v=>{upd('mort',v);if(!v)upd('mortInt',0);}}/>{d.mort&&<Sld label="Mortgage interest paid" val={d.mortInt} min={0} max={100000} step={500} onChange={v=>upd('mortInt',v)} tip="Check your 1098 from your lender."/>}</Bx>}
           <Sld label="State & local taxes (SALT) paid" val={d.salt} min={0} max={40000} step={500} onChange={v=>upd('salt',v)} tip="Property + state income taxes. 2025 SALT cap: $40,000."/>
           <Sld label="Charitable donations" val={d.charity} min={0} max={2000000} step={5000} onChange={v=>upd('charity',v)}/>
           {calc.useItem&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--teal)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Itemizing saves {fm(calc.item-calc.sd)} more — auto-applied.</div>}
