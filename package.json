@@ -8,7 +8,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "check:tax-season": "node scripts/check-tax-data-season.mjs",
+    "verify:irs-sources": "node scripts/verify-irs-sources.mjs",
+    "monitor:irs-signals": "node scripts/monitor-irs-signals.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.383.0",

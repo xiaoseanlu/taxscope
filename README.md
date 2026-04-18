@@ -41,12 +41,18 @@ Deploy the `dist/` folder to Vercel, Netlify, or any static host.
 
 ## Tax Data Sources
 
-- 2025 federal brackets: IRS Rev. Proc. 2024-40
-- Standard deductions: $15,750 single / $31,500 MFJ / $23,625 HoH
-- Child Tax Credit: $2,200/child (One Big Beautiful Bill Act, July 2025)
-- SALT cap: $40,000 (One Big Beautiful Bill Act, July 2025)
-- SE tax rate: 15.3% on 92.35% of net SE income
-- QBI deduction: 20% of qualified business income
+All numeric parameters are sourced from official IRS publications and refreshed annually by the
+automated workflow in `.github/workflows/update-tax-data.yml`. Current inputs:
+
+- **2026 federal brackets:** IRS Rev. Proc. 2025-32
+- **Standard deductions:** $16,100 single / $32,200 MFJ / $24,150 HoH (2026)
+- **401(k) / IRA / HSA limits:** IRS Notice 2025-67 and Rev. Proc. 2025-19
+- **Child Tax Credit:** $2,200 per child (per 2025 legislation)
+- **SALT cap:** $40,000 (per 2025 legislation)
+- **SE tax rate:** 15.3% on 92.35% of net SE income
+- **QBI deduction:** 20% of qualified business income
+
+See [AUTOMATION.md](./AUTOMATION.md) for how tax data is kept current.
 
 ## Legal
 

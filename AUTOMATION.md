@@ -56,26 +56,52 @@ Usually takes 5–10 minutes to verify and merge.
 
 ## Workflow 2: Monthly Tax Law Monitor
 
-**File:** `.github/workflows/monitor-tax-changes.yml`
-**Runs:** Automatically on the **1st of every month**
+**File:** `.github/workflows/monitor-tax-changes.yml`  
+**Script:** `scripts/monitor-irs-signals.mjs`  
+**Runs:** Automatically on the **1st of every month** (+ manual dispatch)
 
 ### What it does
 
-Congress occasionally passes mid-year tax legislation (example: the One Big Beautiful Bill was signed July 4, 2025 — unexpected). This workflow:
+1. Runs **`npm run verify:irs-sources`** — HEAD-checks key pages on irs.gov so broken links are caught early.
+2. Queries the **[Federal Register API](https://www.federalregister.gov/reader-aids/developer-resources)** for recent documents where the agency is the IRS, and filters titles/abstracts with a **keyword regex** (brackets, Rev. Proc., credits, HSA, 401(k), etc.).
+3. If anything matches, **opens one GitHub Issue** with links. **No Anthropic API** — Node 20 native `fetch` only.
 
-1. Asks Claude to search for any significant tax law changes in the last 60 days
-2. If something significant is found, **automatically opens a GitHub Issue** with details and a recommended action
-3. You get notified via your normal GitHub notifications
+**Nothing in the app changes automatically.** Triaging the issue (ignore vs. run the annual updater vs. manual `TAX_DATA` edit) is up to you.
 
-**Nothing changes automatically.** You only get an issue to review.
+---
 
-### Recommended actions the monitor may suggest
+## Staying current: official sources and optional alerts
 
-| Action | Meaning |
+**Rule:** Ship numbers and copy only after they appear on **irs.gov** (or official Treasury / Federal Register text). Third-party articles are for discovery, not as the source of truth.
+
+### Layer 1 — Already in this repo
+
+| Mechanism | Purpose |
 |---|---|
-| `no-action` | Nothing significant — no issue opened |
-| `update-data` | Run the annual updater manually to get new numbers |
-| `review-required` | Significant legislation — may need UI changes, not just number updates |
+| Monthly Federal Register scan (Workflow 2) | Early signal when IRS publishes notices or rules that match the script’s keywords |
+| Annual tax-data workflow (Workflow 1) | Bulk inflation brackets, limits, and related copy once the IRS posts the yearly Rev. Proc. / notices |
+| `verify:irs-sources` | Confirms listed IRS URLs still respond |
+
+### Layer 2 — IRS email (low effort, high value)
+
+Subscribe via **[IRS e-News](https://www.irs.gov/newsroom/e-news-subscriptions)** (GovDelivery):
+
+- **IRS Guidewire** — Technical guidance (notices, revenue procedures, regulations). Best for “do we need to change the estimator?”
+- **IRS Newswire** — Broader releases (still useful for timing and filing-season news)
+
+### Layer 3 — Optional alerts and legislation
+
+| Tool | Suggestion |
+|---|---|
+| **Google Alerts** | One or two high-signal queries, e.g. `"Revenue Procedure" site:irs.gov` or `"inflation adjustments" site:irs.gov` — fewer false positives than a generic “IRS” news alert. |
+| **[Congress.gov API](https://api.congress.gov/)** | Optional: track tax bills when Congress is active; IRS guidance often lags enacted law. |
+| **Interpretive sites** (e.g. Tax Foundation, Tax Policy Center) | Use for plain-English context; **always** verify figures on irs.gov before updating `TAX_DATA`. |
+
+### Cadence
+
+- **Monthly:** Rely on GitHub notifications from Workflow 2 + skim Guidewire/Newswire subjects.
+- **Each fall:** Run or wait for Workflow 1 when the IRS publishes next-year inflation figures (typically October).
+- **Quarterly:** Search [IRS Newsroom](https://www.irs.gov/newsroom) for `inflation` or your tax year if you want a manual sanity check.
 
 ---
 
