@@ -3,17 +3,17 @@
  * ─────────────────────────────────────────────────────────────────
  * Paste this into your HTML <head> for SEO:
  *
- * <title>TaxScope — Free 2025 Tax Estimator | See What You Owe or Get Back</title>
- * <meta name="description" content="Free anonymous 2025 tax estimator. Find out in 4 minutes if you're getting a refund or owe taxes — no signup, no sensitive data needed. Covers W-2, freelance, business owners, retirees, and more.">
- * <meta name="keywords" content="free tax estimator 2025, tax refund calculator, income tax estimator, how much will I owe in taxes, freelancer tax estimator, self employed tax calculator, 1040 estimator, tax refund estimator, small business tax estimator, gig worker taxes, W-2 tax estimator, tax balance due calculator">
- * <meta property="og:title" content="TaxScope — Free 2025 Tax Estimator">
- * <meta property="og:description" content="Instantly estimate your 2025 taxes — refund or balance due. Anonymous, free, takes 4 minutes. No signup.">
+ * <title>TaxScope — Free Tax Estimator | Refund or Balance Due?</title>
+ * <meta name="description" content="Free anonymous tax estimator (current IRS-year rules in-app). No signup. Covers W-2, freelance, business owners, retirees, and more.">
+ * <meta name="keywords" content="free tax estimator, tax refund calculator, income tax estimator, freelancer tax estimator, self employed tax calculator, 1040 estimator, tax balance due calculator">
+ * <meta property="og:title" content="TaxScope — Free Tax Estimator">
+ * <meta property="og:description" content="Estimate refund or balance due in a few minutes — free, anonymous, no signup.">
  * <meta property="og:type" content="website">
  * <link rel="canonical" href="https://taxscope.app">
  *
  * Schema.org structured data (paste in <body>):
  * <script type="application/ld+json">
- * {"@context":"https://schema.org","@type":"WebApplication","name":"TaxScope","description":"Free 2025 income tax estimator","url":"https://taxscope.app","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+ * {"@context":"https://schema.org","@type":"WebApplication","name":"TaxScope","description":"Free income tax estimator","url":"https://taxscope.app","applicationCategory":"FinanceApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
  * </script>
  */
 
@@ -27,7 +27,8 @@ import {
   MapPin, Star, ArrowRight, RefreshCw, Target, Scissors,
   Zap, Globe, Shield, Leaf, Coffee, Music, Tv, Package,
   HardHat, Stethoscope, Scale, FlaskConical, GraduationCap,
-  Megaphone, Plane, Bus, Ship, Hammer, Sprout, Dog, Baby, Glasses
+  Megaphone, Plane, Bus, Ship, Hammer, Sprout, Dog, Baby, Glasses,
+  Sun, Moon, Lock, Clock, Sparkles
 } from "lucide-react";
 
 // ─── ANALYTICS HELPER ────────────────────────────────────────────
@@ -37,40 +38,103 @@ const track = (event, params={}) => {
 };
 
 // ─── STYLES ───────────────────────────────────────────────────────
+// Hybrid design system: Stripe-leaning light + one-tap Robinhood-leaning dark.
+// Tokens are semantic — swap :root values under [data-theme="dark"] to flip.
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
 :root{
-  --bg:#F5F2EC;--white:#FFFFFF;--ink:#17140E;--ink2:#3D3228;--ink3:#5C5047;
-  --coral:#E04E1A;--coral-lt:#FDF0EA;--coral-md:#F6C9B0;
-  --teal:#0B7A6D;--teal-lt:#D3F0EB;
-  --gold:#8A6200;--gold-lt:#FEF5D4;
-  --green:#0F6830;--green-lt:#DCFCE7;
-  --red:#B01818;--red-lt:#FEE2E2;
-  --border:#C9C0B5;--border2:#A8998C;
-  --track:#9C9088;
-  --sh-xs:0 1px 3px rgba(23,20,14,.08);
-  --sh:0 3px 14px rgba(23,20,14,.10),0 1px 4px rgba(23,20,14,.05);
-  --sh-up:0 -4px 28px rgba(23,20,14,.15);
-  --r:10px;--r-lg:16px;--r-xl:22px;
-  --f:'Plus Jakarta Sans',system-ui,sans-serif;
-  --fs:'Instrument Serif',Georgia,serif;
+  --bg:#FAFBFC;--white:#FFFFFF;--surface:#FFFFFF;--surface-2:#F3F5F8;
+  --ink:#0A2540;--ink2:#425466;--ink3:#8792A2;
+  --coral:#3D5AFE;--coral-lt:#EEF0FF;--coral-md:#C7CEFF;
+  --teal:#00A86B;--teal-lt:#E6F7EF;
+  --gold:#B45309;--gold-lt:#FEF3C7;--gold-border:#FDE68A;--gold-fg:#78350F;
+  --green:#00A86B;--green-lt:#E6F7EF;--green-border:#B8E8D0;--green-fg:#14803D;
+  --red:#E5484D;--red-lt:#FDECEC;--red-border:#FECACA;
+  --info:#3B82F6;--info-lt:#EFF6FF;--info-border:#BFDBFE;--info-fg:#1E40AF;
+  --border:#EAEEF3;--border2:#D0D7DE;
+  --track:#D0D7DE;
+  --overlay:rgba(10,37,64,.04);--overlay-strong:rgba(10,37,64,.08);
+  --scrim:rgba(10,37,64,.5);
+  --nav-bg:rgba(250,251,252,.82);
+  /* Inverse (always dark) — used for the sticky bar and footer so they don't flip in dark mode */
+  --inv-bg:#0A2540;--inv-fg:#FFFFFF;--inv-fg-dim:rgba(255,255,255,.72);--inv-fg-dimmer:rgba(255,255,255,.55);--inv-fg-faint:rgba(255,255,255,.35);--inv-border:rgba(255,255,255,.1);--inv-overlay:rgba(255,255,255,.08);
+  /* Chart */
+  --c-gross:#93C5FD;--c-adj:#6EE7B7;--c-taxable:#FCA5A5;--c-tax:#FCD34D;
+  /* Sticky-bar summary number tints (sit on --inv-bg, always dark) */
+  --sum-r:#5EEAD4;--sum-o:#FCD34D;--sum-b:#FCA5A5;
+  --sh-xs:0 1px 2px rgba(10,37,64,.04);
+  --sh:0 1px 2px rgba(10,37,64,.04),0 8px 24px -8px rgba(10,37,64,.08);
+  --sh-up:0 -8px 32px -8px rgba(10,37,64,.15);
+  --sh-primary:0 1px 2px rgba(10,37,64,.04),0 12px 32px -10px rgba(61,90,254,.28);
+  --r:8px;--r-lg:14px;--r-xl:22px;
+  --f:'Inter',system-ui,-apple-system,sans-serif;
+  --fs:'Inter',system-ui,-apple-system,sans-serif;
+  --fm:'JetBrains Mono',ui-monospace,monospace;
 }
-body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;min-height:100vh}
-input,button,select,textarea{font-family:inherit}
+[data-theme="dark"]{
+  --bg:#0A0B0F;--white:#15171E;--surface:#12141A;--surface-2:#1B1E27;
+  --ink:#F5F7FA;--ink2:#9AA3B2;--ink3:#6B7280;
+  --coral:#7C6EFF;--coral-lt:rgba(124,110,255,.12);--coral-md:rgba(124,110,255,.35);
+  --teal:#00D68F;--teal-lt:rgba(0,214,143,.12);
+  --gold:#F59E0B;--gold-lt:rgba(245,158,11,.08);--gold-border:rgba(245,158,11,.22);--gold-fg:#FBBF24;
+  --green:#00D68F;--green-lt:rgba(0,214,143,.08);--green-border:rgba(0,214,143,.28);--green-fg:#34D399;
+  --red:#FF5A5F;--red-lt:rgba(255,90,95,.1);--red-border:rgba(255,90,95,.32);
+  --info:#818CF8;--info-lt:rgba(129,140,248,.14);--info-border:rgba(129,140,248,.35);--info-fg:#A5B4FC;
+  --border:#252833;--border2:#3A3F4D;
+  --track:#2A2D38;
+  --overlay:rgba(255,255,255,.04);--overlay-strong:rgba(255,255,255,.08);
+  --scrim:rgba(0,0,0,.65);
+  --nav-bg:rgba(10,11,15,.82);
+  /* Inverse surface stays dark — on dark mode it becomes slightly darker than body for contrast */
+  --inv-bg:#05060A;--inv-fg:#F5F7FA;--inv-fg-dim:rgba(245,247,250,.72);--inv-fg-dimmer:rgba(245,247,250,.55);--inv-fg-faint:rgba(245,247,250,.35);--inv-border:rgba(255,255,255,.06);--inv-overlay:rgba(255,255,255,.06);
+  /* Chart — themed pastels pitched for dark backgrounds */
+  --c-gross:#60A5FA;--c-adj:#34D399;--c-taxable:#F87171;--c-tax:#FBBF24;
+  --sum-r:#5EEAD4;--sum-o:#FBBF24;--sum-b:#F87171;
+  --sh-xs:0 1px 2px rgba(0,0,0,.3);
+  --sh:0 1px 2px rgba(0,0,0,.3),0 8px 24px -8px rgba(0,0,0,.5);
+  --sh-up:0 -8px 32px -8px rgba(0,0,0,.6);
+  --sh-primary:0 1px 2px rgba(0,0,0,.3),0 12px 32px -10px rgba(124,110,255,.35);
+}
+html{color-scheme:light}
+[data-theme="dark"]{color-scheme:dark}
+body{font-family:var(--f);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;min-height:100vh;font-variant-numeric:tabular-nums;letter-spacing:-.003em;transition:background .24s ease,color .24s ease;}
+input,button,select,textarea{font-family:inherit;font-variant-numeric:tabular-nums;color:var(--ink)}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* MESH GRADIENT HERO BACKDROP (Stripe-style, subtle) */
+.hero-mesh{position:relative;overflow:hidden;isolation:isolate;}
+.hero-mesh::before{content:'';position:absolute;inset:-10%;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 45% 40% at 18% 10%, rgba(61,90,254,.14), transparent 62%),
+    radial-gradient(ellipse 38% 32% at 82% 5%, rgba(124,110,255,.12), transparent 62%),
+    radial-gradient(ellipse 40% 35% at 70% 50%, rgba(0,168,107,.08), transparent 65%);
+  filter:blur(30px);animation:meshDrift 22s ease-in-out infinite alternate;}
+[data-theme="dark"] .hero-mesh::before{
+  background:
+    radial-gradient(ellipse 55% 45% at 18% 10%, rgba(124,110,255,.22), transparent 62%),
+    radial-gradient(ellipse 42% 35% at 82% 5%, rgba(0,214,143,.10), transparent 62%),
+    radial-gradient(ellipse 45% 38% at 70% 50%, rgba(124,110,255,.12), transparent 65%);}
+@keyframes meshDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(2%,-1%) scale(1.05)}}
 
 /* HIGH-CONTRAST SLIDER TRACK */
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;outline:none;cursor:pointer;border:none;background:var(--track);}
 input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--coral);cursor:pointer;box-shadow:0 2px 8px rgba(224,78,26,.45);transition:transform .14s,box-shadow .14s;margin-top:-8px;}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.22);box-shadow:0 3px 14px rgba(224,78,26,.6);}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--coral);cursor:pointer;box-shadow:0 2px 8px rgba(61,90,254,.45),0 0 0 3px var(--white);transition:transform .14s,box-shadow .14s;margin-top:-7px;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.18);box-shadow:0 4px 14px rgba(61,90,254,.6),0 0 0 3px var(--white);}
 input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--track);}
 input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--coral);}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--coral);cursor:pointer;border:none;box-shadow:0 2px 8px rgba(224,78,26,.45);}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--white);box-shadow:0 2px 8px rgba(61,90,254,.45);}
 
-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236A5F52' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238792A2' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
+
+/* BIG DISPLAY NUMBER — tight tracking, tabular figures */
+.num-display{font-family:var(--f);font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:-.035em;line-height:1}
+
+/* THEME TOGGLE BUTTON */
+.theme-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--white);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--ink2);transition:all .16s;flex-shrink:0}
+.theme-btn:hover{color:var(--ink);border-color:var(--border2);background:var(--surface-2)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -484,7 +548,25 @@ const mkProds=(lvl)=>{
 
 // ─── TAX MATH ─────────────────────────────────────────────────────
 // ─── TAX YEAR DATA ──────────────────────────────────────────────────
-// Source: IRS Rev. Proc. 2024-40 (2025) and Rev. Proc. 2025-32 (2026) + IRS Notice 2025-67
+// Authoritative inputs are copied from IRS publications (not fetched at runtime —
+// there is no stable public API that returns every bracket, credit, and state rule).
+//
+// When updating for a new tax year:
+//   1. IRS inflation adjustments: search https://www.irs.gov for the year's Revenue Procedure
+//      (federal brackets, standard deduction, rate schedules).
+//   2. Retirement / HSA limits: IRS cost-of-living notices (401k, IRA, HSA).
+//   3. Add a new TAX_DATA[YYYY] object; extend STATE_TAX if state tables move.
+//   4. Run: npm run check:tax-season   (warns if calendar mode expects a year missing from TAX_DATA)
+//   5. Optional: npm run verify:irs-sources — HEAD-checks key irs.gov pages (network).
+//   6. Monthly: npm run monitor:irs-signals — scans Federal Register (IRS) for review cues (.github/workflows/monitor-tax-changes.yml).
+//   7. CI: .github/workflows/update-tax-data.yml runs scripts/update-tax-data.js each fall
+//      (Claude + web search) to *draft* new-year numbers — always verify against irs.gov before merge.
+//
+// Current build sources (re-copy numbers from these when you refresh the app):
+//   • 2025 federal brackets & standard deduction — IRS Rev. Proc. 2024-40 (irs.gov)
+//   • 2026 federal brackets & standard deduction — IRS Rev. Proc. 2025-32 (irs.gov)
+//   • 2026 401(k) elective deferral limit — IRS Notice 2025-67 (irs.gov)
+//   • IRS “Tax inflation adjustments” newsroom page — cross-check each fall
 const TAX_DATA = {
   2025: {
     brackets: {
@@ -495,7 +577,7 @@ const TAX_DATA = {
     },
     stdDed:{single:15750,mfj:31500,hoh:23625,mfs:15750},
     age65Bonus:{single:2000,mfj:3200},  // additional std ded per qualifying person
-    seniorDeduction:0,                   // new OBBBA senior deduction (2025 has none)
+    seniorDeduction:0,                   // enhanced senior deduction — not in effect for 2025
     r401kMax:23500,
     iraMax:7000,
     hsaMax:{self:4300,family:8550},
@@ -514,7 +596,7 @@ const TAX_DATA = {
     },
     stdDed:{single:16100,mfj:32200,hoh:24150,mfs:16100},
     age65Bonus:{single:2050,mfj:3300},  // per qualifying person (2026 adjusted)
-    seniorDeduction:6000,                // NEW: OBBBA $6k deduction for 65+, phases out $75k-$175k single / $150k-$250k MFJ
+    seniorDeduction:6000,                // $6k for 65+ (phase-outs); verify each year against IRS Form 1040 / Schedule instructions
     r401kMax:24500,                      // IRS Notice 2025-67
     iraMax:7500,
     hsaMax:{self:4400,family:8750},
@@ -525,14 +607,37 @@ const TAX_DATA = {
       {icon:'📈',title:'Higher standard deduction',detail:'Single: $16,100 (+$350) · Married: $32,200 (+$700) · HoH: $24,150 (+$525)'},
       {icon:'💰',title:'Higher 401(k) & IRA limits',detail:'401(k): $24,500 (+$1,000) · IRA: $7,500 (+$500) · HSA: $4,400/$8,750'},
       {icon:'🏡',title:'SALT cap increases to $40,400',detail:'Up +$400 from 2025\'s $40,000 (1% annual increase through 2029)'},
-      {icon:'🎁',title:'NEW: $6,000 Senior Deduction',detail:'For age 65+, on top of standard deduction. Phases out above $75k (single) or $150k (joint). Valid 2025–2028.'},
+      {icon:'🎁',title:'$6,000 Senior Deduction',detail:'For age 65+, on top of standard deduction. Phases out above $75k (single) or $150k (joint). See current IRS instructions for eligible years.'},
       {icon:'📊',title:'Wider tax brackets (~2–4%)',detail:'All bracket thresholds increased for inflation. More income taxed at lower rates vs 2025.'},
     ],
   },
 };
 
-function calcTax(d, year=2025){
-  const Y = TAX_DATA[year] || TAX_DATA[2025];
+/** Deep-clone a tax year for a forward “preview” year (same math until IRS publishes new Rev. Proc.). */
+function cloneTaxYearForPreview(src){
+  return {
+    ...src,
+    brackets:{
+      single:src.brackets.single.map(r=>[...r]),
+      mfj:src.brackets.mfj.map(r=>[...r]),
+      hoh:src.brackets.hoh.map(r=>[...r]),
+      mfs:src.brackets.mfs.map(r=>[...r]),
+    },
+    stdDed:{...src.stdDed},
+    age65Bonus:{...src.age65Bonus},
+    hsaMax:{...src.hsaMax},
+    changes:[
+      {icon:'📌',title:'Next-year preview',detail:'Values mirror the latest published IRS year until the IRS posts final inflation adjustments on irs.gov (usually each fall). Replace with official brackets and limits when released.'},
+    ],
+  };
+}
+TAX_DATA[2027]=cloneTaxYearForPreview(TAX_DATA[2026]);
+
+function calcTax(d, year){
+  // Fallback: if requested year not in TAX_DATA, use the highest available year
+  const available = Object.keys(TAX_DATA).map(Number).sort((a,b)=>a-b);
+  const fallback = available[available.length-1];
+  const Y = TAX_DATA[year] || TAX_DATA[fallback];
   const fs=d.fs||'single';
   const bk=Y.brackets;
   const sdMap=Y.stdDed;
@@ -546,10 +651,14 @@ function calcTax(d, year=2025){
   const capGainST=d.capGainST||0;  // short-term: ordinary income rates
   const capGainLT=d.capGainLT||0;  // long-term: preferential rates (0/15/20%)
   const gross=(d.w2||0)+(d.sw2||0)+totalSE+(d.otherInc||0)+capGainST+capGainLT;
-  const adj=Math.min(d.r401k||0,Y.r401kMax)+Math.min(d.ira||0,Y.iraMax)+Math.min(d.hsa||0,Y.hsaMax.family)+Math.min(d.sloan||0,Y.slanMax)+seTax*0.5+(d.seHI||0);
+  const hsaIn=d.hsa||0;
+  const fsHsa=d.fs||'single';
+  const hsaCap=(fsHsa==='mfj'||fsHsa==='hoh'||(d.kids||0)>0)?Y.hsaMax.family:Y.hsaMax.self;
+  const hsaDed=Math.min(hsaIn,hsaCap);
+  const adj=Math.min(d.r401k||0,Y.r401kMax)+Math.min(d.ira||0,Y.iraMax)+hsaDed+Math.min(d.sloan||0,Y.slanMax)+seTax*0.5+(d.seHI||0);
   // Age 65+ bonus standard deduction
   const a65bonus = d.age==='65plus' ? (fs==='mfj'?Y.age65Bonus.mfj:Y.age65Bonus.single) : 0;
-  // 2026 NEW: OBBBA senior deduction ($6k for 65+, simplified - full phase-out ignored for estimator)
+  // Enhanced senior deduction ($6k for 65+ from 2026 onward, simplified — full phase-out ignored for estimator)
   const seniorDed = (d.age==='65plus' && Y.seniorDeduction>0) ? Y.seniorDeduction : 0;
   const qbi=totalSE>0?Math.max(0,totalSE*0.2):0;
   const agi=Math.max(0,gross-adj);
@@ -597,10 +706,10 @@ function getCx(d){
   if(d.wt?.includes('biz'))s+=3;if(d.bizEntity==='scorp'||d.bizEntity==='ccorp')s+=3;else if(d.bizEntity==='partner')s+=2;if(d.bizEmp)s+=1;
   if(d.wt?.includes('se'))s+=2;if((d.wt?.length||0)>1)s+=1;
   if(d.home)s+=1;if((d.kids||0)>0)s+=1;if(d.fs==='mfj'&&(d.sw2||0)>0)s+=1;
-  if(s<=1)return{level:'low',label:'Low',color:'#14803D',bg:'#DCFCE7',desc:'Simple — a free DIY tool handles this easily.'};
-  if(s<=4)return{level:'med',label:'Medium',color:'#A16207',bg:'#FEF9C3',desc:'A few moving parts — the right tool makes it easy.'};
-  if(s<=7)return{level:'high',label:'High',color:'#C2410C',bg:'#FFEDD5',desc:'Worth getting a second set of eyes on this.'};
-  return{level:'vhigh',label:'Complex',color:'#B91C1C',bg:'#FEE2E2',desc:'A pro could save you more than they cost.'};
+  if(s<=1)return{level:'low',label:'Low',color:'var(--green-fg)',bg:'var(--green-lt)',desc:'Simple — a free DIY tool handles this easily.'};
+  if(s<=4)return{level:'med',label:'Medium',color:'var(--gold-fg)',bg:'var(--gold-lt)',desc:'A few moving parts — the right tool makes it easy.'};
+  if(s<=7)return{level:'high',label:'High',color:'var(--gold)',bg:'var(--gold-lt)',desc:'Worth getting a second set of eyes on this.'};
+  return{level:'vhigh',label:'Complex',color:'var(--red)',bg:'var(--red-lt)',desc:'A pro could save you more than they cost.'};
 }
 function gFC(cx,p){const t={diy:{low:'$0–$30',med:'$0–$100',high:'$50–$150',vhigh:'$100–$200'},assist:{low:'$50–$150',med:'$100–$300',high:'$200–$450',vhigh:'$300–$550'},pro:{low:'$150–$300',med:'$250–$500',high:'$400–$900',vhigh:'$600–$2,000+'}};return t[p]?.[cx.level]||'—';}
 const fm=(n,s)=>{if(n==null)return'—';const a=Math.abs(Math.round(n));if(s&&a>=1000)return`$${Math.round(a/1000)}k`;return`$${a.toLocaleString()}`};
@@ -608,8 +717,60 @@ const D0={wt:[],st:'',age:'',fs:'single',w2:0,sw2:0,wh:0,seInc:0,seV:0,seH:0,seE
 const OP0={work:true,hh:true,inc:true,sav:true,ded:true};
 
 // ─── UI ATOMS ─────────────────────────────────────────────────────
+/** Brand mark — same gradient “T” everywhere (nav, footer, drawer, empty state). */
+function LogoMark({size=22,inverse=false}){
+  const fs=Math.max(10,Math.round(size*0.48));
+  const br=Math.max(6,Math.round(size*0.32));
+  return(
+    <div role="img" aria-label="TaxScope" style={{
+      width:size,height:size,borderRadius:br,
+      background:'linear-gradient(135deg,var(--coral) 0%,#7C6EFF 100%)',
+      display:'flex',alignItems:'center',justifyContent:'center',
+      color:'#fff',fontSize:fs,fontWeight:800,fontFamily:'var(--f)',lineHeight:1,
+      letterSpacing:'-.04em',flexShrink:0,
+      boxShadow:inverse?'0 2px 12px rgba(0,0,0,.42)':'0 2px 6px rgba(61,90,254,.35)',
+    }}>T</div>
+  );
+}
 function Tog({on,onChange}){return(<label style={{position:'relative',display:'inline-flex',width:40,height:22,cursor:'pointer',flexShrink:0}}><input type="checkbox" checked={on} onChange={e=>onChange(e.target.checked)} style={{opacity:0,width:0,height:0}}/><span style={{position:'absolute',inset:0,background:on?'var(--coral)':'var(--border2)',borderRadius:11,transition:'background .2s'}}><span style={{position:'absolute',width:16,height:16,borderRadius:'50%',background:'white',top:3,left:on?'calc(100% - 19px)':3,transition:'left .2s',boxShadow:'0 1px 3px rgba(0,0,0,.2)'}}/></span></label>);}
 function Chip({children,color='var(--coral)',bg='var(--coral-lt)'}){return <span style={{display:'inline-flex',alignItems:'center',gap:3,background:bg,color,borderRadius:100,padding:'2px 7px',fontSize:'.68rem',fontWeight:700,lineHeight:1.5,whiteSpace:'nowrap'}}>{children}</span>;}
+
+// ── Tip: reusable callout (icon + copy). Icon sits in the same column as all
+// text so it optically centers on the first line (title + body), avoiding the
+// “floating high” misalignment from a separate grid row for the title.
+function Tip({tone='neutral', title, children, compact=false}){
+  const tones = {
+    neutral: {bg:'var(--surface-2)', bd:'var(--border)',       ic:'var(--ink2)',   fg:'var(--ink2)'},
+    info:    {bg:'var(--info-lt)',   bd:'var(--info-border)',  ic:'var(--info-fg)', fg:'var(--info-fg)'},
+    accent:  {bg:'var(--surface-2)', bd:'var(--border)',       ic:'var(--coral)',  fg:'var(--ink2)'},
+    warn:    {bg:'var(--surface-2)', bd:'var(--border)',       ic:'var(--gold)',   fg:'var(--ink2)'},
+  };
+  const t = tones[tone] || tones.neutral;
+  const fs = compact ? '.73rem' : '.77rem';
+  const lh = compact ? 1.6 : 1.65;
+  const iconSize = compact ? 12 : 13;
+  const pad = compact ? '8px 11px' : '10px 12px';
+  const shell = {background:t.bg,border:`1px solid ${t.bd}`,borderRadius:'var(--r)',padding:pad};
+  const iconCol = {flexShrink:0,width:iconSize+2,display:'flex',justifyContent:'center',paddingTop:'0.22em'};
+  const textCol = {flex:1,minWidth:0,fontSize:fs,lineHeight:lh,color:t.fg};
+  if(title){
+    return(
+      <div style={{...shell,display:'flex',gap:10,alignItems:'flex-start'}}>
+        <span style={iconCol}><Info size={iconSize} style={{color:t.ic}} aria-hidden="true"/></span>
+        <div style={textCol}>
+          <div style={{color:'var(--ink)',marginBottom:children?5:0}}><strong>{title}</strong></div>
+          {children}
+        </div>
+      </div>
+    );
+  }
+  return(
+    <div style={{...shell,display:'flex',gap:10,alignItems:'flex-start'}}>
+      <span style={iconCol}><Info size={iconSize} style={{color:t.ic}} aria-hidden="true"/></span>
+      <div style={textCol}>{children}</div>
+    </div>
+  );
+}
 
 function Sld({label,val,min,max,step=500,onChange,tip}){
   const[edit,setEdit]=useState(false);
@@ -619,31 +780,34 @@ function Sld({label,val,min,max,step=500,onChange,tip}){
   return(<div style={{display:'flex',flexDirection:'column',gap:6}}>
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:8}}>
       <span style={{fontSize:'.8rem',fontWeight:600,color:'var(--ink2)',flex:1,lineHeight:1.35}}>{label}</span>
-      {edit?(<div style={{display:'flex',alignItems:'center',gap:3}}><span style={{fontSize:'.875rem',color:'var(--ink3)'}}>$</span><input type="number" value={raw} onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{if(e.key==='Enter')commit();if(e.key==='Escape')setEdit(false);}} autoFocus style={{width:88,padding:'3px 6px',border:'1.5px solid var(--coral)',borderRadius:6,fontSize:'.9rem',fontWeight:700,outline:'none',textAlign:'right'}}/><button onClick={commit} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:6,padding:'3px 8px',fontSize:'.7rem',fontWeight:700,cursor:'pointer'}}>✓</button></div>
+      {edit?(<div style={{display:'flex',alignItems:'center',gap:3}}><span style={{fontSize:'.875rem',color:'var(--ink3)'}}>$</span><input type="number" value={raw} onChange={e=>setRaw(e.target.value)} onBlur={commit} onKeyDown={e=>{if(e.key==='Enter')commit();if(e.key==='Escape')setEdit(false);}} autoFocus style={{width:88,padding:'3px 6px',border:'1.5px solid var(--coral)',borderRadius:6,fontSize:'.9rem',fontWeight:700,outline:'none',textAlign:'right',background:'var(--white)',color:'var(--ink)'}}/><button onClick={commit} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:6,padding:'3px 8px',fontSize:'.7rem',fontWeight:700,cursor:'pointer'}}>✓</button></div>
       ):(<button onClick={()=>{setRaw(String(val));setEdit(true);}} title="Click to enter exact number" style={{display:'flex',alignItems:'center',gap:4,background:'none',border:'1px solid var(--border2)',borderRadius:7,padding:'3px 9px',cursor:'pointer',color:'var(--ink)',transition:'all .14s',whiteSpace:'nowrap',flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.color='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border2)';e.currentTarget.style.color='var(--ink)';}}>
         <span style={{fontFamily:'var(--fs)',fontSize:'.95rem',fontWeight:600}}>{fm(val)}</span><Edit2 size={10} style={{color:'var(--ink3)'}}/>
       </button>)}
     </div>
     <div style={{padding:'3px 0'}}><input type="range" min={min} max={max} step={step} value={val} onChange={e=>onChange(+e.target.value)} style={{background:`linear-gradient(90deg,var(--coral) ${pct}%,var(--track) ${pct}%)`}}/></div>
     <div style={{display:'flex',justifyContent:'space-between',fontSize:'.68rem',fontWeight:500,color:'var(--ink3)'}}><span>{fm(min,true)}</span><span>{fm(max,true)}</span></div>
-    {tip&&<div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',display:'flex',gap:7,alignItems:'flex-start'}}><Info size={12} style={{color:'#92400E',flexShrink:0,marginTop:1}}/><span style={{fontSize:'.74rem',color:'#78350F',lineHeight:1.6}}>{tip}</span></div>}
+    {tip&&<div style={{background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'7px 10px',display:'flex',gap:10,alignItems:'flex-start'}}>
+      <span style={{flexShrink:0,width:14,display:'flex',justifyContent:'center',paddingTop:'0.22em'}}><Info size={12} style={{color:'var(--coral)'}} aria-hidden="true"/></span>
+      <span style={{fontSize:'.74rem',color:'var(--ink2)',lineHeight:1.6,flex:1,minWidth:0}}>{tip}</span>
+    </div>}
   </div>);
 }
 
 function TileG({opts,val,onChange,multi=false,cols=2,sm=false,hint}){
   const sel=v=>multi?(val||[]).includes(v):val===v;
   const h=v=>{if(multi){const a=val||[];onChange(sel(v)?a.filter(x=>x!==v):[...a,v]);}else onChange(v);};
-  return(<div>{hint&&<div style={{fontSize:'.73rem',color:'var(--ink3)',marginBottom:5,fontWeight:500}}>{hint}</div>}<div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:5}}>{opts.map(o=>{const a=sel(o.v);const Ic=o.Icon;return(<button key={o.v} onClick={()=>h(o.v)} style={{background:a?'var(--coral-lt)':'var(--white)',border:`1.5px solid ${a?'var(--coral)':'var(--border)'}`,borderRadius:'var(--r-lg)',padding:sm?'8px 7px':'10px 8px',cursor:'pointer',textAlign:'center',transition:'all .14s',boxShadow:a?'0 0 0 3px rgba(224,78,26,.09)':'var(--sh-xs)',display:'flex',flexDirection:'column',alignItems:'center',gap:3}} onMouseEnter={e=>{if(!a){e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';}}} onMouseLeave={e=>{if(!a){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}>{Ic&&<Ic size={sm?15:17} style={{color:a?'var(--coral)':'var(--ink2)',strokeWidth:1.75}}/>}<span style={{fontWeight:700,fontSize:sm?'.75rem':'.82rem',color:a?'var(--coral)':'var(--ink)',lineHeight:1.25}}>{o.label}</span>{o.sub&&<span style={{fontSize:'.64rem',color:a?'var(--coral)':'var(--ink3)',lineHeight:1.3}}>{o.sub}</span>}</button>);})}</div></div>);
+  return(<div>{hint&&<div style={{fontSize:'.73rem',color:'var(--ink3)',marginBottom:5,fontWeight:500}}>{hint}</div>}<div style={{display:'grid',gridTemplateColumns:`repeat(${cols},1fr)`,gap:5}}>{opts.map(o=>{const a=sel(o.v);const Ic=o.Icon;return(<button key={o.v} onClick={()=>h(o.v)} style={{background:a?'var(--coral-lt)':'var(--white)',border:`1.5px solid ${a?'var(--coral)':'var(--border)'}`,borderRadius:'var(--r-lg)',padding:sm?'8px 7px':'10px 8px',cursor:'pointer',textAlign:'center',transition:'all .14s',boxShadow:a?'0 0 0 3px rgba(61,90,254,.09)':'var(--sh-xs)',display:'flex',flexDirection:'column',alignItems:'center',gap:3}} onMouseEnter={e=>{if(!a){e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';}}} onMouseLeave={e=>{if(!a){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}>{Ic&&<Ic size={sm?15:17} style={{color:a?'var(--coral)':'var(--ink2)',strokeWidth:1.75}}/>}<span style={{fontWeight:700,fontSize:sm?'.75rem':'.82rem',color:a?'var(--coral)':'var(--ink)',lineHeight:1.25}}>{o.label}</span>{o.sub&&<span style={{fontSize:'.64rem',color:a?'var(--coral)':'var(--ink3)',lineHeight:1.3}}>{o.sub}</span>}</button>);})}</div></div>);
 }
 function TR({label,sub,checked,onChange}){return(<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,padding:'9px 11px',background:'var(--bg)',borderRadius:'var(--r)'}}><div><div style={{fontWeight:600,fontSize:'.84rem'}}>{label}</div>{sub&&<div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1}}>{sub}</div>}</div><Tog on={checked} onChange={onChange}/></div>);}
-function Stp({val,min=0,max=10,onChange,label}){return(<div style={{display:'flex',flexDirection:'column',gap:5}}>{label&&<span style={{fontSize:'.79rem',fontWeight:600,color:'var(--ink2)'}}>{label}</span>}<div style={{display:'inline-flex',alignItems:'center',border:'1.5px solid var(--border)',borderRadius:'var(--r)',overflow:'hidden',width:'fit-content'}}><button onClick={()=>onChange(Math.max(min,val-1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s'}} onMouseEnter={e=>e.target.style.background='var(--bg)'} onMouseLeave={e=>e.target.style.background='none'}>−</button><span style={{padding:'6px 16px',fontWeight:700,fontSize:'1.1rem',fontFamily:'var(--fs)',minWidth:44,textAlign:'center'}}>{val}</span><button onClick={()=>onChange(Math.min(max,val+1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s'}} onMouseEnter={e=>e.target.style.background='var(--bg)'} onMouseLeave={e=>e.target.style.background='none'}>+</button></div></div>);}
+function Stp({val,min=0,max=10,onChange,label}){return(<div style={{display:'flex',flexDirection:'column',gap:5}}>{label&&<span style={{fontSize:'.79rem',fontWeight:600,color:'var(--ink2)'}}>{label}</span>}<div style={{display:'inline-flex',alignItems:'center',border:'1.5px solid var(--border)',borderRadius:'var(--r)',overflow:'hidden',width:'fit-content',background:'var(--white)'}}><button onClick={()=>onChange(Math.max(min,val-1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s',color:'var(--ink)'}} onMouseEnter={e=>e.target.style.background='var(--overlay)'} onMouseLeave={e=>e.target.style.background='none'}>−</button><span style={{padding:'6px 16px',fontWeight:700,fontSize:'1.1rem',fontFamily:'var(--fs)',minWidth:44,textAlign:'center',color:'var(--ink)'}}>{val}</span><button onClick={()=>onChange(Math.min(max,val+1))} style={{background:'none',border:'none',padding:'6px 13px',fontSize:'1.1rem',cursor:'pointer',transition:'background .14s',color:'var(--ink)'}} onMouseEnter={e=>e.target.style.background='var(--overlay)'} onMouseLeave={e=>e.target.style.background='none'}>+</button></div></div>);}
 function Bx({children}){return <div style={{background:'var(--bg)',border:'1px dashed var(--border2)',borderRadius:'var(--r)',padding:'.875rem',display:'flex',flexDirection:'column',gap:'.875rem'}}>{children}</div>;}
 
 function DCard({id,title,sub,Icon,open,onToggle,done,children,required,optional}){
-  const ac=done?'var(--teal)':open?(optional?'#94A3B8':'var(--coral)'):'var(--border)';
-  const shadow=done?'0 0 0 3px rgba(11,122,109,.05)':open?(optional?'0 2px 8px rgba(0,0,0,.05)':'0 0 0 4px rgba(224,78,26,.07)'):'var(--sh-xs)';
-  const bg=open&&optional&&!done?'#FAFAF8':'var(--white)';
-  return(<div id={id} style={{background:bg,borderRadius:'var(--r-xl)',border:`1.5px solid ${ac}`,overflow:'hidden',transition:'all .22s',boxShadow:shadow}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,0,0,.015)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:done?'var(--teal)':open?(optional?'#EAE6E1':'var(--coral)'):'var(--bg)',border:`1.5px solid ${ac}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?(optional?'var(--ink2)':'white'):'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:done?'var(--ink)':open?(optional?'var(--ink2)':'var(--coral)'):'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}{optional&&!done&&<span style={{fontSize:'.62rem',background:open?'#EFF6FF':'var(--bg)',color:open?'#3B82F6':'var(--ink3)',borderRadius:100,padding:'1px 6px',fontWeight:600,border:`1px solid ${open?'#BFDBFE':'var(--border)'}`}}>Optional</span>}</div><div style={{fontSize:'.72rem',fontWeight:500,color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
+  const ac=done?'var(--teal)':open?(optional?'var(--border2)':'var(--coral)'):'var(--border)';
+  const shadow=done?'0 0 0 3px rgba(0,168,107,.05)':open?(optional?'var(--sh)':'0 0 0 4px rgba(61,90,254,.07)'):'var(--sh-xs)';
+  const bg=open&&optional&&!done?'var(--surface-2)':'var(--white)';
+  return(<div id={id} style={{background:bg,borderRadius:'var(--r-xl)',border:`1.5px solid ${ac}`,overflow:'hidden',transition:'all .22s',boxShadow:shadow}}><button onClick={onToggle} style={{width:'100%',background:'none',border:'none',padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,cursor:'pointer',textAlign:'left',transition:'background .13s'}} onMouseEnter={e=>e.currentTarget.style.background='var(--overlay)'} onMouseLeave={e=>e.currentTarget.style.background='none'}><div style={{width:28,height:28,borderRadius:'50%',background:done?'var(--teal)':open?(optional?'var(--border)':'var(--coral)'):'var(--bg)',border:`1.5px solid ${ac}`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all .2s'}}>{done?<Check size={14} style={{color:'white',strokeWidth:2.5}}/>:<Icon size={13} style={{color:open?(optional?'var(--ink2)':'white'):'var(--ink2)',strokeWidth:1.75}}/>}</div><div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:done?'var(--ink)':open?(optional?'var(--ink2)':'var(--coral)'):'var(--ink)',display:'flex',alignItems:'center',gap:5}}>{title}{required&&!done&&<span style={{fontSize:'.62rem',background:'var(--coral)',color:'white',borderRadius:100,padding:'1px 6px',fontWeight:700}}>Required</span>}{optional&&!done&&<span style={{fontSize:'.62rem',background:open?'var(--info-lt)':'var(--bg)',color:open?'#3B82F6':'var(--ink3)',borderRadius:100,padding:'1px 6px',fontWeight:600,border:`1px solid ${open?'var(--info-border)':'var(--border)'}`}}>Optional</span>}</div><div style={{fontSize:'.72rem',fontWeight:500,color:'var(--ink3)',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{sub}</div></div>{done&&!open&&<Chip color='var(--teal)' bg='var(--teal-lt)'><Check size={9} style={{strokeWidth:2.5}}/>Done</Chip>}<ChevronDown size={15} style={{color:'var(--ink3)',transition:'transform .22s',transform:open?'rotate(180deg)':'none',flexShrink:0}}/></button><div style={{overflow:'hidden',maxHeight:open?'5000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}><div style={{padding:'0 1.125rem 1.375rem',display:'flex',flexDirection:'column',gap:'1rem'}}>{open&&children}</div></div></div>);
 }
 
 // ─── BIZ SECTION ──────────────────────────────────────────────────
@@ -669,7 +833,7 @@ function BizSection({d,upd}){
   return(<div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
     <div>
       <label style={{fontSize:'.8rem',fontWeight:700,color:'var(--ink2)',marginBottom:5,display:'block'}}>What does your business do? <span style={{fontWeight:400,color:'var(--ink3)'}}>(type it — we'll find the right deductions)</span></label>
-      <input type="text" value={d.bizDesc||''} onChange={e=>{upd('bizDesc',e.target.value);upd('bizTypeId',null);}} placeholder="e.g. rideshare driver, photographer, restaurant, painter, nurse..." style={{width:'100%',padding:'10px 13px',border:'1.5px solid var(--border)',borderRadius:'var(--r)',fontSize:'.875rem',outline:'none',transition:'border-color .15s',background:'var(--white)'}} onFocus={e=>e.target.style.borderColor='var(--coral)'} onBlur={e=>e.target.style.borderColor='var(--border)'}/>
+      <input type="text" value={d.bizDesc||''} onChange={e=>{upd('bizDesc',e.target.value);upd('bizTypeId',null);}} placeholder="e.g. rideshare driver, photographer, restaurant, painter, nurse..." style={{width:'100%',padding:'10px 13px',border:'1.5px solid var(--border)',borderRadius:'var(--r)',fontSize:'.875rem',outline:'none',transition:'border-color .15s',background:'var(--white)',color:'var(--ink)'}} onFocus={e=>e.target.style.borderColor='var(--coral)'} onBlur={e=>e.target.style.borderColor='var(--border)'}/>
       {detected&&!d.bizTypeId&&<div style={{marginTop:6,padding:'7px 11px',background:'var(--coral-lt)',borderRadius:'var(--r)',display:'flex',alignItems:'center',gap:7,justifyContent:'space-between',flexWrap:'wrap'}}><span style={{fontSize:'.74rem',color:'var(--coral)',fontWeight:600}}>Detected: <strong>{detected.label}</strong></span><button onClick={()=>upd('bizTypeId',detected.id)} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'3px 10px',fontSize:'.71rem',fontWeight:700,cursor:'pointer',flexShrink:0}}>Use this ✓</button></div>}
     </div>
     {!active&&d.bizDesc.length>2&&(
@@ -709,7 +873,7 @@ function BizSection({d,upd}){
       if(derived && derived!==d.bizEntity) setTimeout(()=>upd('bizEntity',derived),0);
       const Opt=({val,current,field,label,sub})=>{
         const sel=current===val;
-        return(<button onClick={()=>upd(field,val)} style={{background:sel?'var(--teal-lt)':'var(--white)',border:`1.5px solid ${sel?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r)',padding:'9px 12px',cursor:'pointer',textAlign:'left',flex:1,transition:'all .13s',boxShadow:sel?'0 0 0 3px rgba(11,122,109,.06)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.background='var(--teal-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}>
+        return(<button onClick={()=>upd(field,val)} style={{background:sel?'var(--teal-lt)':'var(--white)',border:`1.5px solid ${sel?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r)',padding:'9px 12px',cursor:'pointer',textAlign:'left',flex:1,transition:'all .13s',boxShadow:sel?'0 0 0 3px rgba(0,168,107,.06)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--teal)';e.currentTarget.style.background='var(--teal-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}>
           <div style={{fontWeight:700,fontSize:'.82rem',color:sel?'var(--teal)':'var(--ink)'}}>{label}</div>
           {sub&&<div style={{fontSize:'.71rem',color:sel?'var(--teal)':'var(--ink3)',marginTop:2}}>{sub}</div>}
         </button>);
@@ -745,7 +909,7 @@ function BizSection({d,upd}){
           </div>
         </div>}
         {/* Result */}
-        {derived&&entityInfo&&<div style={{background:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FFFBEB':'var(--teal-lt)',border:`1.5px solid ${entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'#FDE68A':'var(--teal)'}`,borderRadius:'var(--r-lg)',padding:'10px 13px'}}>
+        {derived&&entityInfo&&<div style={{background:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold-lt)':'var(--teal-lt)',border:`1.5px solid ${entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold-border)':'var(--teal)'}`,borderRadius:'var(--r-lg)',padding:'10px 13px'}}>
           <div style={{fontWeight:700,fontSize:'.82rem',color:entityInfo.complexity==='High'||entityInfo.complexity==='Very High'?'var(--gold)':'var(--teal)',marginBottom:3}}>Detected: {entityInfo.label}</div>
           <div style={{fontSize:'.73rem',color:'var(--ink2)',lineHeight:1.65}}>{entityInfo.tax}</div>
           <div style={{marginTop:5,fontSize:'.68rem',fontWeight:600,color:'var(--ink3)'}}>Filing complexity: {entityInfo.complexity}</div>
@@ -765,14 +929,17 @@ function BizSection({d,upd}){
         {active.expenses.map(ex=><Sld key={ex.k} label={ex.l} val={+(d.bizExp||{})[ex.k]||0} min={0} max={ex.max} step={Math.max(50,Math.round(ex.max/60)*50)} onChange={v=>upd('bizExp',{...d.bizExp,[ex.k]:v})} tip={ex.tip}/>)}
       </div>
       {bizExpTotal>0&&<div style={{marginTop:9,background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 11px',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontWeight:600,fontSize:'.78rem',color:'var(--teal)'}}>Total deductions entered</span><span style={{fontFamily:'var(--fs)',fontSize:'1rem',fontWeight:700,color:'var(--teal)'}}>{fm(bizExpTotal)}</span></div>}
-      <div style={{marginTop:7,padding:'6px 9px',background:'var(--bg)',borderRadius:'var(--r)',fontSize:'.72rem',color:'var(--ink3)',display:'flex',gap:5,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/>There may be more deductions for your situation — a tax pro often finds more. This raises your complexity rating.</div>
+      <div style={{marginTop:7,padding:'7px 10px',background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:'var(--r)',fontSize:'.72rem',color:'var(--ink3)',display:'flex',gap:10,alignItems:'flex-start'}}>
+        <span style={{flexShrink:0,width:14,display:'flex',justifyContent:'center',paddingTop:'0.22em'}}><Info size={11} style={{color:'var(--coral)'}} aria-hidden="true"/></span>
+        <span style={{lineHeight:1.6,flex:1,minWidth:0}}>There may be more deductions for your situation — a tax pro often finds more. This raises your complexity rating.</span>
+      </div>
     </div>)}
     <div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 11px',display:'flex',justifyContent:'space-between',alignItems:'center'}}><span style={{fontWeight:600,fontSize:'.78rem',color:'var(--teal)'}}>Net business income (est.)</span><span style={{fontFamily:'var(--fs)',fontSize:'1rem',fontWeight:700,color:'var(--teal)'}}>{fm(Math.max(0,(d.bizRev||0)-(d.bizPay||0)-Object.values(d.bizExp||{}).reduce((a,v)=>a+(+v||0),0)))}</span></div>
   </div>);
 }
 
 // ─── RESULTS DRAWER ───────────────────────────────────────────────
-function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}){
+function ResultsDrawer({calc,calcPlan,yearDiff,bigDiff,primaryYear,planningYear,dualMode,data,onClose,closing=false}){
   const[comfort,setComfort]=useState(5);
   const[openPath,setOpenPath]=useState(null);
   const cx=getCx(data);
@@ -783,33 +950,33 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
   const PRODS=mkProds(cx.level);
   const prods4=pid=>pid==='diy'?(cx.level==='low'?PRODS.diy_low:cx.level==='vhigh'||cx.level==='high'?PRODS.diy_high:PRODS.diy_med):pid==='assist'?PRODS.assist:PRODS.pro;
   const PATHS=[{id:'diy',Icon:Laptop,t:"I've got this — I'll do it myself",desc:"I'm comfortable using tax software on my own."},{id:'assist',Icon:Star,t:'I want a pro to check my work',desc:"I'll fill it in — then an expert reviews before I file."},{id:'pro',Icon:Briefcase,t:'Just take care of it for me',desc:"I'd rather hand everything to a professional."}];
-  const chartD=[{n:'Gross',v:calc.gross,c:'#93C5FD'},{n:'After Adj.',v:calc.agi,c:'#6EE7B7'},{n:'Taxable',v:calc.taxable,c:'#FCA5A5'},{n:'Total Tax',v:calc.tot,c:'#FCD34D'}].filter(x=>x.v>0);
+  const chartD=[{n:'Gross',v:calc.gross,c:'var(--c-gross)'},{n:'After Adj.',v:calc.agi,c:'var(--c-adj)'},{n:'Taxable',v:calc.taxable,c:'var(--c-taxable)'},{n:'Total Tax',v:calc.tot,c:'var(--c-tax)'}].filter(x=>x.v>0);
   return(<div style={{background:'var(--white)',borderTop:'3px solid var(--coral)',maxHeight:'88vh',overflowY:'auto',animation:closing?'drawerDown .4s cubic-bezier(.4,0,1,1) both':'drawerUp 1.1s cubic-bezier(.16,1,.3,1) both'}} onWheel={e=>e.stopPropagation()} onTouchMove={e=>e.stopPropagation()}>
     <div style={{maxWidth:900,margin:'0 auto',padding:'1.5rem 1.5rem 3rem'}}>
       {/* Sticky close header */}
       <div style={{position:'sticky',top:0,zIndex:10,background:'var(--white)',borderBottom:'1px solid var(--border)',padding:'.875rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.5rem'}}>
-        <div style={{fontWeight:800,fontSize:'1rem',display:'flex',alignItems:'center',gap:6}}><Target size={16} style={{color:'var(--coral)'}}/>Your Full Tax Estimate</div>
-        <button onClick={onClose} aria-label="Close" style={{width:32,height:32,borderRadius:'50%',background:'var(--bg)',border:'1.5px solid var(--border)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'all .15s',flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background='var(--ink)';e.currentTarget.style.color='white';e.currentTarget.style.borderColor='var(--ink)';e.currentTarget.querySelector('svg').style.stroke='white';}} onMouseLeave={e=>{e.currentTarget.style.background='var(--bg)';e.currentTarget.style.borderColor='var(--border)';e.currentTarget.querySelector('svg').style.stroke='var(--ink2)';}}>
+        <div style={{fontWeight:800,fontSize:'1rem',display:'flex',alignItems:'center',gap:8}}><LogoMark size={20}/>Your Full Tax Estimate</div>
+        <button onClick={onClose} aria-label="Close" style={{width:32,height:32,borderRadius:'50%',background:'var(--bg)',border:'1.5px solid var(--border)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',transition:'all .15s',flexShrink:0}} onMouseEnter={e=>{e.currentTarget.style.background='var(--coral)';e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.querySelector('svg').style.stroke='white';}} onMouseLeave={e=>{e.currentTarget.style.background='var(--bg)';e.currentTarget.style.borderColor='var(--border)';e.currentTarget.querySelector('svg').style.stroke='var(--ink2)';}}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink2)" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
-      <div style={{textAlign:'center',padding:'1.25rem',background:isR?'#F0FDF4':isO&&amt>1500?'#FEF2F2':'#FEFCE8',borderRadius:'var(--r-xl)',marginBottom:'1.25rem',border:`1.5px solid ${isR?'#86EFAC':isO&&amt>1500?'#FECACA':'#FDE68A'}`}}>
+      <div style={{textAlign:'center',padding:'1.25rem',background:isR?'var(--green-lt)':isO&&amt>1500?'var(--red-lt)':'var(--gold-lt)',borderRadius:'var(--r-xl)',marginBottom:'1.25rem',border:`1.5px solid ${isR?'var(--green-border)':isO&&amt>1500?'var(--red-border)':'var(--gold-border)'}`}}>
         <div style={{fontSize:'.64rem',fontWeight:700,color:mainC,textTransform:'uppercase',letterSpacing:'.1em',marginBottom:4}}>{isR?'Estimated Refund 🎉':isO?'Estimated Balance Due':'≈ Break Even'}</div>
         <div style={{display:'flex',alignItems:'flex-start',justifyContent:'center',gap:1}}>
           <span style={{fontSize:'1.3rem',fontWeight:800,color:mainC,opacity:.45,marginTop:5,fontFamily:'var(--f)'}}>~</span>
-          <div style={{fontFamily:'var(--fs)',fontSize:'clamp(2.5rem,7vw,4rem)',fontWeight:400,color:mainC,lineHeight:1}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
+          <div className="num-display" style={{fontSize:'clamp(2.5rem,7vw,4rem)',color:mainC}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
         </div>
-        <div style={{display:'inline-flex',alignItems:'center',gap:4,background:'rgba(0,0,0,.05)',borderRadius:100,padding:'3px 11px',marginTop:6,fontSize:'.73rem',color:mainC,fontWeight:600}}><TrendingUp size={10}/>Range: {isR&&'+'}{isO&&'−'}~{fm(amt*.87,true)} – {fm(amt*1.13,true)}</div>
+        <div style={{display:'inline-flex',alignItems:'center',gap:4,background:'var(--overlay-strong)',borderRadius:100,padding:'3px 11px',marginTop:6,fontSize:'.73rem',color:mainC,fontWeight:600}}><TrendingUp size={10}/>Range: {isR&&'+'}{isO&&'−'}~{fm(amt*.87,true)} – {fm(amt*1.13,true)}</div>
         <div style={{color:mainC,opacity:.5,fontSize:'.72rem',marginTop:4}}>Eff. rate: {(calc.eff*100).toFixed(1)}% · Top bracket: {Math.round(calc.mg*100)}% · Sandbox estimate only</div>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:'1rem',marginBottom:'1.25rem'}}>
-        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Income flow</div><ResponsiveContainer width="100%" height={130}><BarChart data={chartD} margin={{top:0,right:0,left:0,bottom:0}}><XAxis dataKey="n" tick={{fontSize:10,fill:'#ADA59B',fontFamily:'Plus Jakarta Sans'}} axisLine={false} tickLine={false}/><YAxis hide/><Tooltip formatter={v=>[fm(v),'Amount']} contentStyle={{fontFamily:'Plus Jakarta Sans',borderRadius:8,border:'1px solid var(--border)',fontSize:'.77rem'}}/><Bar dataKey="v" radius={[4,4,0,0]}>{chartD.map((e,i)=><Cell key={i} fill={e.c}/>)}</Bar></BarChart></ResponsiveContainer></div>
+        <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Income flow</div><ResponsiveContainer width="100%" height={130}><BarChart data={chartD} margin={{top:0,right:0,left:0,bottom:0}}><XAxis dataKey="n" tick={{fontSize:10,fill:'var(--ink3)',fontFamily:'Inter'}} axisLine={false} tickLine={false}/><YAxis hide/><Tooltip formatter={v=>[fm(v),'Amount']} contentStyle={{fontFamily:'Inter',background:'var(--white)',borderRadius:8,border:'1px solid var(--border)',fontSize:'.77rem',color:'var(--ink)'}} itemStyle={{color:'var(--ink)'}} labelStyle={{color:'var(--ink2)'}}/><Bar dataKey="v" radius={[4,4,0,0]}>{chartD.map((e,i)=><Cell key={i} fill={e.c}/>)}</Bar></BarChart></ResponsiveContainer></div>
         <div style={{background:'var(--bg)',borderRadius:'var(--r-xl)',padding:'1rem'}}><div style={{fontWeight:700,fontSize:'.84rem',marginBottom:'.875rem'}}>Tax breakdown</div>{(()=>{
   const rows=[
-    ['Federal Tax',fm(calc.nF),'#EF4444'],
-    NT.has(data.st)?['State Tax','$0 🎉','#14803D']:['State Tax',fm(calc.stT),'#EF4444'],
-    calc.seTax>0?['SE Tax',fm(calc.seTax),'#F59E0B']:null,
-    calc.uC>0?['Credits',`−${fm(calc.uC)}`,'#14803D']:null,
+    ['Federal Tax',fm(calc.nF),'var(--red)'],
+    NT.has(data.st)?['State Tax','$0 🎉','var(--green-fg)']:['State Tax',fm(calc.stT),'var(--red)'],
+    calc.seTax>0?['SE Tax',fm(calc.seTax),'var(--gold)']:null,
+    calc.uC>0?['Credits',`−${fm(calc.uC)}`,'var(--green-fg)']:null,
   ].filter(Boolean);
   return(<>
     {rows.map((r,i)=>(
@@ -824,7 +991,7 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
     </div>
     {calc.paid>0&&<div style={{display:'flex',justifyContent:'space-between',padding:'5px 0',fontSize:'.78rem'}}>
       <span style={{color:'var(--ink2)'}}>Paid Already</span>
-      <span style={{fontWeight:500,color:'#14803D'}}>−{fm(calc.paid)}</span>
+      <span style={{fontWeight:500,color:'var(--green-fg)'}}>−{fm(calc.paid)}</span>
     </div>}
   </>);
 })()}
@@ -840,20 +1007,22 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
       </div>
       <div>
         {/* ── FILING SECTION CARD ── */}
-        <div style={{background:'linear-gradient(135deg,var(--teal-lt),var(--white))',borderRadius:'var(--r-xl)',border:'1.5px solid var(--teal)',padding:'1.25rem',marginTop:'.25rem',boxShadow:'0 0 0 4px rgba(11,122,109,.05)'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1.5px solid rgba(11,122,109,.2)'}}>
-          <div style={{width:34,height:34,borderRadius:'50%',background:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 2px 8px rgba(11,122,109,.25)'}}><Briefcase size={15} style={{color:'white',strokeWidth:2}}/></div>
+        <div style={{background:'linear-gradient(135deg,var(--teal-lt),var(--white))',borderRadius:'var(--r-xl)',border:'1.5px solid var(--teal)',padding:'1.25rem',marginTop:'.25rem',boxShadow:'0 0 0 4px rgba(0,168,107,.05)'}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1.5px solid rgba(0,168,107,.2)'}}>
+          <div style={{width:34,height:34,borderRadius:'50%',background:'var(--teal)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:'0 2px 8px rgba(0,168,107,.25)'}}><Briefcase size={15} style={{color:'white',strokeWidth:2}}/></div>
           <div>
             <div style={{fontWeight:800,fontSize:'.95rem',color:'var(--teal)'}}>How do you want to file?</div>
             <div style={{fontSize:'.75rem',fontWeight:500,color:'var(--ink2)',marginTop:1}}>Choose your style — we'll show the best tools for each.</div>
           </div>
         </div>
-        <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',marginBottom:'.625rem',lineHeight:1.6,display:'flex',gap:6,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/><span><strong>About costs:</strong> These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></span></div>
+        <div style={{marginBottom:'.625rem'}}>
+          <Tip tone="accent" compact title="About costs:">These are avg. ranges for what software charges <em>to prepare your return</em> — not additional taxes owed. DIY avg. <strong>{gFC(cx,'diy')}</strong> · Full service avg. <strong>{gFC(cx,'pro')}</strong></Tip>
+        </div>
         <div style={{display:'flex',flexDirection:'column',gap:7}}>
-          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(11,122,109,.07)':'var(--sh-xs)'}}><button onClick={()=>{const newPath=openPath===p.id?null:p.id;setOpenPath(newPath);if(newPath)track('filing_path_selected',{path:p.id,is_suggested:isSuggested,complexity:cx.level});}} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.75rem',fontWeight:500,color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
-          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(11,122,109,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onClick={()=>track('product_clicked',{product:pr.n,path:p.id,rank:i+1,complexity:cx.level})} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.transform='translateX(3px)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.transform='none';e.currentTarget.style.borderColor='var(--border)';}}>
+          {PATHS.map(p=>{const isSuggested=autoP===p.id;const isOpen=openPath===p.id;const prods=prods4(p.id);return(<div key={p.id} style={{border:`1.5px solid ${isOpen?'var(--teal)':'var(--border)'}`,borderRadius:'var(--r-xl)',overflow:'hidden',background:isOpen?'var(--teal-lt)':'var(--white)',transition:'all .17s',boxShadow:isOpen?'0 0 0 3px rgba(0,168,107,.07)':'var(--sh-xs)'}}><button onClick={()=>{const newPath=openPath===p.id?null:p.id;setOpenPath(newPath);if(newPath)track('filing_path_selected',{path:p.id,is_suggested:isSuggested,complexity:cx.level});}} style={{width:'100%',background:'none',border:'none',padding:'.875rem 1.1rem',cursor:'pointer',textAlign:'left',display:'flex',alignItems:'center',gap:9,justifyContent:'space-between'}}><div style={{display:'flex',alignItems:'center',gap:8,flex:1,minWidth:0}}><p.Icon size={15} style={{color:isOpen?'var(--teal)':'var(--ink2)',flexShrink:0,strokeWidth:1.75}}/><div style={{minWidth:0}}><div style={{fontWeight:700,fontSize:'.875rem',color:isOpen?'var(--teal)':'var(--ink)',display:'flex',alignItems:'center',gap:5,flexWrap:'wrap'}}>{p.t}{isSuggested&&<Chip color='#7C3AED' bg='#EDE9FE'>✦ Suggested</Chip>}</div><div style={{fontSize:'.75rem',fontWeight:500,color:'var(--ink2)',marginTop:1}}>{p.desc}</div></div></div><div style={{textAlign:'right',flexShrink:0,marginLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.83rem',whiteSpace:'nowrap'}}>{gFC(cx,p.id)}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',whiteSpace:'nowrap'}}>avg. cost</div><ChevronDown size={12} style={{color:'var(--ink3)',transition:'transform .2s',transform:isOpen?'rotate(180deg)':'none',marginTop:2}}/></div></button>
+          <div style={{overflow:'hidden',maxHeight:isOpen?'3000px':'0',transition:'max-height .4s cubic-bezier(.4,0,.2,1)'}}>{isOpen&&(<div style={{borderTop:'1px solid rgba(0,168,107,.2)',padding:'.9rem 1.1rem 1.1rem'}}><div style={{fontSize:'.73rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>Top picks for your situation:</div><div style={{display:'flex',flexDirection:'column',gap:6}}>{prods.map((pr,i)=>(<a key={i} href={pr.url} target="_blank" rel="noopener noreferrer" style={{background:'var(--white)',borderRadius:'var(--r-lg)',padding:'9px 12px',display:'flex',alignItems:'flex-start',gap:10,border:'1.5px solid var(--border)',transition:'all .14s',textDecoration:'none',color:'inherit'}} onClick={()=>track('product_clicked',{product:pr.n,path:p.id,rank:i+1,complexity:cx.level})} onMouseEnter={e=>{e.currentTarget.style.boxShadow='var(--sh)';e.currentTarget.style.borderColor='var(--coral)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='none';e.currentTarget.style.borderColor='var(--border)';}}>
             <div style={{width:34,height:34,borderRadius:8,background:`${pr.c}15`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.15rem',flexShrink:0,border:`1px solid ${pr.c}22`,marginTop:1}}>{pr.em}</div>
-            <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={pr.c} bg={`${pr.c}15`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid rgba(11,122,109,.2)',paddingTop:4}}>{pr.detail}</div>}</div>
+            <div style={{flex:1,minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:4,flexWrap:'wrap',marginBottom:2}}><span style={{fontWeight:700,fontSize:'.83rem'}}>{pr.n}</span>{pr.badge&&<Chip color={pr.c} bg={`${pr.c}15`}>{pr.badge}</Chip>}</div><div style={{fontSize:'.71rem',color:'var(--ink3)',lineHeight:1.45}}>{pr.sub}</div>{i===0&&pr.detail&&<div style={{fontSize:'.69rem',color:'var(--ink2)',marginTop:4,lineHeight:1.5,fontStyle:'italic',borderTop:'1px solid rgba(0,168,107,.2)',paddingTop:4}}>{pr.detail}</div>}</div>
             <div style={{textAlign:'right',flexShrink:0,paddingLeft:8}}><div style={{fontWeight:700,color:'var(--teal)',fontSize:'.78rem',whiteSpace:'nowrap'}}>{pr.price}</div><div style={{fontSize:'.6rem',color:'var(--ink3)',marginTop:2,display:'flex',alignItems:'center',gap:2,justifyContent:'flex-end'}}><ArrowRight size={8}/>Visit</div></div>
           </a>))}</div></div>)}</div>
           </div>);})}
@@ -861,30 +1030,30 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
 
         </div>{/* end filing card */}
 
-        {/* 2026 PLANNING PANEL — standalone card */}
-        {calc26&&calc.gross>0&&(
+        {/* PLANNING PANEL — only during dual filing-season (Jan 1 – Apr 15) */}
+        {dualMode&&calcPlan&&calc.gross>0&&TAX_DATA[planningYear]&&(
           <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'var(--r-xl)',padding:'1.25rem',marginTop:'1rem'}}>
             <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:'1rem',paddingBottom:'1rem',borderBottom:'1px solid var(--border)'}}>
               <div style={{width:28,height:28,borderRadius:'50%',background:'var(--border)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
                 <TrendingUp size={13} style={{color:'var(--ink2)'}}/>
               </div>
               <div>
-                <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--ink2)'}}>Plan ahead for 2026</div>
-                <div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1}}>You're earning 2026 income right now — here's what changes.</div>
+                <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--ink2)'}}>Plan ahead for {planningYear}</div>
+                <div style={{fontSize:'.71rem',color:'var(--ink3)',marginTop:1}}>You're earning {planningYear} income right now — here's what changes.</div>
               </div>
             </div>
             {bigDiff&&(
-              <div style={{background:'white',borderRadius:'var(--r)',padding:'10px 13px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8}}>
-                <div style={{fontSize:'.79rem',color:'var(--ink2)'}}><strong>With 2026 tax rules, your estimate would be:</strong></div>
-                <div style={{fontFamily:'var(--fs)',fontSize:'1.25rem',fontWeight:700,color:yearDiff<0?'var(--teal)':'var(--red)',flexShrink:0}}>
-                  {yearDiff<0?`${fm(Math.abs(calc26.res))} refund`:`${fm(Math.abs(calc26.res))} owed`}
-                  <span style={{fontSize:'.65rem',fontWeight:500,color:'var(--ink3)',marginLeft:5}}>({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs 2025)</span>
+              <div style={{background:'var(--white)',borderRadius:'var(--r)',padding:'10px 13px',marginBottom:10,display:'flex',alignItems:'center',justifyContent:'space-between',gap:8,border:'1px solid var(--border)'}}>
+                <div style={{fontSize:'.79rem',color:'var(--ink2)'}}><strong>With {planningYear} tax rules, your estimate would be:</strong></div>
+                <div className="num-display" style={{fontSize:'1.25rem',color:yearDiff<0?'var(--teal)':'var(--red)',flexShrink:0,fontWeight:700}}>
+                  {yearDiff<0?`${fm(Math.abs(calcPlan.res))} refund`:`${fm(Math.abs(calcPlan.res))} owed`}
+                  <span style={{fontSize:'.65rem',fontWeight:500,color:'var(--ink3)',marginLeft:5}}>({yearDiff<0?'+':'-'}{fm(Math.abs(yearDiff))} vs {primaryYear})</span>
                 </div>
               </div>
             )}
             <div style={{display:'flex',flexDirection:'column',gap:6}}>
-              {TAX_DATA[2026].changes.map((c,i)=>(
-                <div key={i} style={{background:'white',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start'}}>
+              {(TAX_DATA[planningYear].changes||[]).map((c,i)=>(
+                <div key={i} style={{background:'var(--white)',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start',border:'1px solid var(--border)'}}>
                   <span style={{fontSize:'1rem',flexShrink:0,lineHeight:1.4}}>{c.icon}</span>
                   <div>
                     <div style={{fontWeight:600,fontSize:'.79rem',color:'var(--ink2)'}}>{c.title}</div>
@@ -892,26 +1061,53 @@ function ResultsDrawer({calc,calc26,yearDiff,bigDiff,data,onClose,closing=false}
                   </div>
                 </div>
               ))}
-              {data.age==='65plus'&&(
-                <div style={{background:'#ECFDF5',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start',border:'1px solid #86EFAC'}}>
+              {data.age==='65plus'&&TAX_DATA[planningYear].seniorDeduction>0&&(
+                <div style={{background:'var(--green-lt)',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:8,alignItems:'flex-start',border:'1px solid var(--green-border)'}}>
                   <span style={{fontSize:'1rem',flexShrink:0}}>🎉</span>
                   <div>
-                    <div style={{fontWeight:700,fontSize:'.79rem',color:'#14803D'}}>You qualify for the new $6,000 Senior Deduction!</div>
-                    <div style={{fontSize:'.72rem',color:'#15803D',marginTop:1,lineHeight:1.5}}>Brand new for 2026 (2025–2028): $6,000 additional deduction for filers 65+. Phases out above $75k (single) / $150k (joint).</div>
+                    <div style={{fontWeight:700,fontSize:'.79rem',color:'var(--green-fg)'}}>You qualify for the ${fm(TAX_DATA[planningYear].seniorDeduction,true)} Senior Deduction!</div>
+                    <div style={{fontSize:'.72rem',color:'var(--green-fg)',marginTop:1,lineHeight:1.5}}>Additional deduction for filers 65+. Phases out above $75k (single) / $150k (joint).</div>
                   </div>
                 </div>
               )}
             </div>
             <div style={{marginTop:10,fontSize:'.69rem',color:'var(--ink3)',textAlign:'center'}}>
-              Estimates only · 2026 rules: IRS Rev. Proc. 2025-32 · Files April 2027
+              Estimates only · {planningYear} rules · Files April {planningYear+1}
             </div>
           </div>
         )}
 
-        <div style={{marginTop:'1rem',padding:'8px 12px',background:'var(--bg)',borderRadius:'var(--r-lg)',fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.7,textAlign:'center'}}>🔒 TaxScope is a free sandbox estimator — not tax advice. Numbers are estimates based on 2025 & 2026 tax data (IRS Rev. Proc. 2024-40, 2025-32). Always consult a tax professional for your actual return.</div>
+        <div style={{marginTop:'1rem',padding:'8px 12px',background:'var(--bg)',borderRadius:'var(--r-lg)',fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.7,textAlign:'center'}}>🔒 TaxScope is a free sandbox estimator — not tax advice. Numbers are estimates based on published IRS tax data for tax year {dualMode?`${primaryYear} & ${planningYear}`:primaryYear}. Always consult a tax professional for your actual return.</div>
       </div>
     </div>
   </div>);
+}
+
+// ─── ACTIVE TAX-YEAR LOGIC ───────────────────────────────────────
+// Determines which tax year(s) the app surfaces based on today's date.
+//
+// Rule (January → mid-April = "filing season", rest of year = "post-filing"):
+//   • Jan 1 – Apr 15 of calendar-year Y → primary = Y-1 (filing NOW), planning = Y (earning NOW); dual mode.
+//   • Apr 16 – Dec 31 of calendar-year Y → primary = Y (earning NOW); no planning year; single mode.
+//
+// So each January the app automatically flips to dual-year mode and each
+// April 15 it flips back to single-year mode, no code change required.
+// Falls back gracefully if TAX_DATA for the chosen year is missing.
+function getActiveYears(now = new Date()){
+  const y = now.getFullYear();
+  const deadline = new Date(y, 3, 15, 23, 59, 59); // April 15, 23:59:59
+  const available = Object.keys(TAX_DATA).map(Number).sort((a,b)=>a-b);
+  const pick = yr => (TAX_DATA[yr] ? yr : (available.find(a=>a>=yr) ?? available[available.length-1]));
+  if(now <= deadline){
+    let primary = pick(y - 1);
+    let planning = pick(y);
+    if(planning === primary){
+      const nextUp = available.find(a => a > primary);
+      planning = nextUp != null ? nextUp : null;
+    }
+    return {primary, planning, dual: planning != null};
+  }
+  return {primary: pick(y), planning: null, dual: false};
 }
 
 // ─── APP ──────────────────────────────────────────────────────────
@@ -927,17 +1123,29 @@ export default function App(){
   const upd=useCallback((k,v)=>setD(p=>({...p,[k]:v})),[]);
   const tog=k=>setOp(o=>({...o,[k]:!o[k]}));
 
-  // Always calculate 2025 (current filing season) + 2026 (current income year) in parallel
-  const calc=useMemo(()=>calcTax(d,2025),[d]);       // 2025 = primary (filing NOW)
-  const calc26=useMemo(()=>calcTax(d,2026),[d]);      // 2026 = planning (earning NOW)
-  const yearDiff=Math.round(calc26.res - calc.res);   // negative = bigger refund/less owed in 2026
-  const bigDiff=Math.abs(yearDiff)>=150;              // show 2026 callout when diff is meaningful
+  // Active years from calendar date (recomputed when the local date changes)
+  const taxSeasonKey=`${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`;
+  const years=useMemo(()=>getActiveYears(new Date()),[taxSeasonKey]);
+  const {primary:primaryYear, planning:planningYear, dual:dualMode} = years;
+  const calc=useMemo(()=>calcTax(d,primaryYear),[d,primaryYear]);
+  const calcPlan=useMemo(()=>planningYear?calcTax(d,planningYear):null,[d,planningYear]);
+  const yearDiff=calcPlan?Math.round(calcPlan.res - calc.res):0;
+  const bigDiff=dualMode && Math.abs(yearDiff)>=150;
 
   const cx=getCx(d);
-  const Y25=TAX_DATA[2025];
-  const Y26=TAX_DATA[2026];
+  const _yk=Object.keys(TAX_DATA).map(Number).sort((a,b)=>a-b);
+  const Yprimary=TAX_DATA[primaryYear]||TAX_DATA[_yk[_yk.length-1]];
+  const Yplan=planningYear?(TAX_DATA[planningYear]||null):null;
 
   useEffect(()=>{const el=document.createElement('style');el.textContent=CSS;document.head.prepend(el);return()=>el.remove();},[]);
+
+  // Theme — always light on landing; dark is session-only via manual toggle (no persistence)
+  const[theme,setTheme]=useState('light');
+  useEffect(()=>{
+    document.documentElement.setAttribute('data-theme',theme);
+    try{localStorage.removeItem('taxscope-theme');}catch{}
+  },[theme]);
+  const toggleTheme=useCallback(()=>{setTheme(t=>{const next=t==='dark'?'light':'dark';track('theme_toggled',{theme:next});return next;});},[]);
   const reset=useCallback(()=>{setD({...D0});setOp({...OP0});setStarted(false);setDrawerOpen(false);setSelectedPersona(null);setDrawerDismissed(false);},[]);
 
   // Track when estimate becomes meaningful (first time gross > 0)
@@ -1012,65 +1220,71 @@ export default function App(){
   if(!d.age)missingItems.push({id:'card-work',label:'Age range'});
   if(started&&!doneInc&&d.wt.length>0)missingItems.push({id:'card-inc',label:'Income amount'});
 
-  // ── 2026 PLANNING HINT: shown contextually inline on relevant inputs
-  // "You're earning 2026 income right now — here's how the rules are different"
-  const Hint26=({show=true,icon='📅',children})=>{
-    if(!show)return null;
-    return(
-      <div style={{background:'linear-gradient(135deg,#EFF6FF,#DBEAFE)',border:'1px solid #BFDBFE',borderRadius:'var(--r)',padding:'8px 11px',display:'flex',gap:7,alignItems:'flex-start',marginTop:4}}>
-        <span style={{fontSize:'.875rem',flexShrink:0,lineHeight:1.5}}>{icon}</span>
-        <div style={{fontSize:'.75rem',color:'#1E3A8A',lineHeight:1.65}}><strong style={{color:'#1E40AF'}}>2026 planning tip:</strong> {children}</div>
-      </div>
+  // ── PLANNING HINT: shown contextually inline during dual-mode filing season
+  // (Jan 1 – Apr 15) to compare rules for the year being filed vs the upcoming year.
+  // Outside filing season it returns null — we only show one year's rules.
+  const HintNext=({show=true,children})=>
+    !show||!dualMode||!planningYear?null:(
+      <div style={{marginTop:4}}><Tip tone="info" compact title={`${planningYear} planning tip:`}>{children}</Tip></div>
     );
-  };
+
 
   return(<div style={{minHeight:'100vh',paddingBottom:drawerOpen?0:70}}>
     {/* NAV */}
-    <nav style={{background:'rgba(245,242,236,.94)',backdropFilter:'blur(14px)',borderBottom:'1px solid var(--border)',position:'sticky',top:0,zIndex:100,padding:'.75rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',boxShadow:'var(--sh-xs)'}}>
+    <nav style={{background:'var(--nav-bg)',backdropFilter:'blur(14px)',WebkitBackdropFilter:'blur(14px)',borderBottom:'1px solid var(--border)',position:'sticky',top:0,zIndex:100,padding:'.75rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
       <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
-        <div style={{display:'flex',alignItems:'center',gap:6,fontWeight:800,fontSize:'.9375rem'}}>
-          <Target size={17} style={{color:'var(--coral)'}}/>TaxScope
+        <div style={{display:'flex',alignItems:'center',gap:8,fontWeight:700,fontSize:'.9375rem',letterSpacing:'-.015em'}}>
+          <LogoMark size={22}/>
+          TaxScope
         </div>
-        <span style={{fontSize:'.75rem',color:'var(--ink2)',fontWeight:600,whiteSpace:'nowrap'}}>Free Tax Estimator</span>
-
+        <span style={{fontSize:'.72rem',color:'var(--ink3)',fontWeight:500,whiteSpace:'nowrap',letterSpacing:'.02em',textTransform:'uppercase'}}>Free Tax Estimator · {primaryYear}</span>
       </div>
-      <div style={{display:'flex',alignItems:'center',gap:'.875rem'}}>
-        
-        
+      <div style={{display:'flex',alignItems:'center',gap:'.5rem'}}>
+        <button className="theme-btn" onClick={toggleTheme} aria-label={theme==='dark'?'Switch to light mode':'Switch to dark mode'} title={theme==='dark'?'Light mode':'Dark mode'}>
+          {theme==='dark'?<Moon size={15} strokeWidth={2}/>:<Sun size={15} strokeWidth={2}/>}
+        </button>
       </div>
     </nav>
 
     {/* HERO */}
-    <div style={{background:'linear-gradient(160deg,var(--white) 0%,var(--bg) 100%)',borderBottom:'1px solid var(--border)',padding:'2.5rem 1.5rem 2rem'}}>
+    <div className="hero-mesh" style={{background:'var(--bg)',borderBottom:'1px solid var(--border)',padding:'2.75rem 1.5rem 2.25rem'}}>
       <div style={{maxWidth:960,margin:'0 auto',textAlign:'center'}}>
-        <h1 className="fu" style={{fontFamily:'var(--fs)',fontSize:'clamp(1.85rem,4.5vw,3.25rem)',fontWeight:400,lineHeight:1.12,letterSpacing:'-.02em',marginBottom:'.75rem'}}>
+        <div className="fu" style={{display:'inline-flex',alignItems:'center',gap:6,fontSize:'12px',fontWeight:600,color:'var(--coral)',background:'var(--coral-lt)',padding:'5px 14px',borderRadius:999,marginBottom:'1.25rem',letterSpacing:'-.005em'}}>
+          Tax year {dualMode?`${primaryYear} & ${planningYear}`:primaryYear} · Federal brackets & limits from published IRS guidance
+        </div>
+        <h1 className="fu" style={{fontFamily:'var(--f)',fontSize:'clamp(1.85rem,4.5vw,3.5rem)',fontWeight:700,lineHeight:1.05,letterSpacing:'-.04em',marginBottom:'.875rem'}}>
           Will you get <em style={{color:'var(--coral)'}}>money back</em>,<br/>or owe more this year?
         </h1>
         <p className="fu d1" style={{fontSize:'.9rem',fontWeight:500,color:'var(--ink2)',maxWidth:440,margin:'0 auto 1.75rem',lineHeight:1.8}}>
           Free, anonymous tax estimator — no signup, no sensitive data needed. Works for W-2 employees, freelancers, business owners, retirees, and everyone in between.
         </p>
         <div className="fu d2" style={{marginBottom:'1.5rem'}}>
-          <div style={{background:'var(--gold-lt)',border:'1px solid #FDE68A',borderRadius:100,padding:'4px 14px',fontSize:'.75rem',fontWeight:700,color:'#78350F',display:'inline-flex',alignItems:'center',gap:5,marginBottom:'.625rem'}}>
-            <Star size={11}/> Try a pre-filled demo — pick any persona below to see how it works
+          <div style={{background:'var(--coral-lt)',border:'1.5px solid var(--coral-md)',borderRadius:100,padding:'6px 16px',fontSize:'.78rem',fontWeight:700,color:'var(--coral)',display:'inline-flex',alignItems:'center',gap:7,marginBottom:'.625rem',boxShadow:'0 2px 10px rgba(61,90,254,.12)'}}>
+            <Sparkles size={12}/> Try a pre-filled demo — pick any persona below
           </div>
           <p style={{fontSize:'.75rem',color:'var(--ink3)',marginBottom:'.75rem'}}>10 fictional people, fully pre-filled. Explore their scenario or scroll down to enter your own.</p>
-          <div style={{display:'flex',gap:5,overflowX:'auto',justifyContent:'center',flexWrap:'wrap',padding:'0 .5rem .25rem',maxWidth:920,margin:'0 auto'}}>
-            {PERSONAS.map(p=>{const sel=selectedPersona===p.id;return(<button key={p.id} onClick={()=>load(p)} style={{background:sel?'var(--coral)':'var(--white)',border:`1.5px solid ${sel?'var(--coral)':'var(--border)'}`,borderRadius:100,padding:'5px 12px',fontWeight:600,fontSize:'.73rem',cursor:'pointer',display:'flex',alignItems:'center',gap:4,transition:'all .14s',flexShrink:0,whiteSpace:'nowrap',boxShadow:sel?'0 2px 8px rgba(224,78,26,.3)':'none',transform:sel?'translateY(-2px)':'none'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';e.currentTarget.style.transform='translateY(-2px)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';e.currentTarget.style.transform='none';}}}><span style={{fontWeight:700,color:sel?'white':'var(--ink)'}}>{p.name}</span><span style={{color:sel?'rgba(255,255,255,.75)':'var(--ink3)',fontWeight:400}}>({p.role})</span></button>);})}
+          <div style={{display:'flex',gap:8,overflowX:'auto',justifyContent:'center',flexWrap:'wrap',padding:'0 .5rem .25rem',maxWidth:920,margin:'0 auto'}}>
+            {PERSONAS.map(p=>{const sel=selectedPersona===p.id;return(<button key={p.id} onClick={()=>load(p)} style={{background:sel?'var(--coral)':'var(--white)',border:`1.5px solid ${sel?'var(--coral)':'var(--border)'}`,borderRadius:100,padding:'6px 13px',fontWeight:600,fontSize:'.73rem',cursor:'pointer',display:'flex',alignItems:'center',gap:4,transition:'background .14s, border-color .14s, color .14s',flexShrink:0,whiteSpace:'nowrap'}} onMouseEnter={e=>{if(!sel){e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';}}} onMouseLeave={e=>{if(!sel){e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--white)';}}}><span style={{fontWeight:700,color:sel?'white':'var(--ink)'}}>{p.name}</span><span style={{color:sel?'rgba(255,255,255,.75)':'var(--ink3)',fontWeight:400}}>({p.role})</span></button>);})}
           </div>
         </div>
         <div className="fu d3" style={{display:'flex',alignItems:'center',gap:'1rem',justifyContent:'center',flexWrap:'wrap'}}>
           <div style={{flex:1,maxWidth:110,height:1,background:'var(--border)'}}/>
-          <button onClick={started?reset:startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'flex',alignItems:'center',gap:7,transition:'all .17s',boxShadow:'0 4px 18px rgba(224,78,26,.32)',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 7px 28px rgba(224,78,26,.44)';}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 4px 18px rgba(224,78,26,.32)';}}>
+          <button onClick={started?reset:startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'flex',alignItems:'center',gap:8,transition:'box-shadow .17s',boxShadow:'0 4px 18px rgba(61,90,254,.32)',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 6px 22px rgba(61,90,254,.44)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 4px 18px rgba(61,90,254,.32)';}}>
             {started?<><RefreshCw size={15}/>Start over</>:<><Calculator size={15}/>Run my own estimate — let's go!</>}
           </button>
           <div style={{flex:1,maxWidth:110,height:1,background:'var(--border)'}}/>
+        </div>
+        <div className="fu d4" style={{display:'flex',gap:'1.5rem',justifyContent:'center',flexWrap:'wrap',marginTop:'1.5rem',fontSize:'.72rem',fontWeight:500,color:'var(--ink3)'}}>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><Lock size={11} style={{color:'var(--teal)'}}/>100% in-browser</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><Shield size={11} style={{color:'var(--teal)'}}/>No signup · No data stored</span>
+          <span style={{display:'inline-flex',alignItems:'center',gap:6}}><Clock size={11} style={{color:'var(--teal)'}}/>~4 minutes</span>
         </div>
       </div>
     </div>
 
     {/* DASHBOARD */}
     {started&&<div style={{maxWidth:1100,margin:'0 auto',padding:'1.75rem 1.5rem'}}>
-      {d._n&&<div className="fu" style={{background:'linear-gradient(135deg,var(--teal),#0D9488)',color:'white',borderRadius:'var(--r-xl)',padding:'.875rem 1.25rem',display:'flex',gap:10,alignItems:'center',marginBottom:'1rem'}}><div style={{width:32,height:32,borderRadius:'50%',background:'rgba(255,255,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Briefcase size={15} style={{color:'white'}}/></div><div><div style={{fontWeight:700}}>Meet {d._n} ({d._t})</div><div style={{fontSize:'.75rem',opacity:.75,marginTop:1}}>Pre-filled — tweak anything to match your own situation.</div></div><button onClick={startOwn} style={{marginLeft:'auto',background:'rgba(255,255,255,.18)',border:'1px solid rgba(255,255,255,.28)',color:'white',borderRadius:100,padding:'4px 11px',fontSize:'.71rem',fontWeight:600,cursor:'pointer',flexShrink:0,transition:'background .13s',whiteSpace:'nowrap'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,.28)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,.18)'}>Start fresh</button></div>}
+      {d._n&&<div className="fu" style={{background:'linear-gradient(135deg,var(--coral),#7C6EFF)',color:'white',borderRadius:'var(--r-xl)',padding:'.875rem 1.25rem',display:'flex',gap:10,alignItems:'center',marginBottom:'1rem'}}><div style={{width:32,height:32,borderRadius:'50%',background:'rgba(255,255,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Briefcase size={15} style={{color:'white'}}/></div><div><div style={{fontWeight:700}}>Meet {d._n} ({d._t})</div><div style={{fontSize:'.75rem',opacity:.75,marginTop:1}}>Pre-filled — tweak anything to match your own situation.</div></div><button onClick={startOwn} style={{marginLeft:'auto',background:'rgba(255,255,255,.18)',border:'1px solid rgba(255,255,255,.28)',color:'white',borderRadius:100,padding:'4px 11px',fontSize:'.71rem',fontWeight:600,cursor:'pointer',flexShrink:0,transition:'background .13s',whiteSpace:'nowrap'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,.28)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(255,255,255,.18)'}>Start fresh</button></div>}
 
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:'1rem',marginBottom:'1rem'}}>
         <DCard id="card-work" title="Work Situation" sub="How do you earn your income?" Icon={Briefcase} open={op.work} onToggle={()=>tog('work')} done={doneWork} required>
@@ -1078,7 +1292,7 @@ export default function App(){
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
             <div style={{display:'flex',flexDirection:'column',gap:4}}>
               <label style={{fontSize:'.74rem',fontWeight:600,color:'var(--ink2)',display:'flex',alignItems:'center',gap:3}}><MapPin size={10}/>State</label>
-              <select value={d.st} onChange={e=>upd('st',e.target.value)} style={{width:'100%',padding:'8px 28px 8px 10px',border:'1.5px solid var(--border)',borderRadius:'var(--r)',fontSize:'.83rem',background:'var(--white)',outline:'none',transition:'border-color .15s'}} onFocus={e=>e.target.style.borderColor='var(--coral)'} onBlur={e=>e.target.style.borderColor='var(--border)'}>
+              <select value={d.st} onChange={e=>upd('st',e.target.value)} style={{width:'100%',padding:'8px 28px 8px 10px',border:'1.5px solid var(--border)',borderRadius:'var(--r)',fontSize:'.83rem',background:'var(--white)',color:'var(--ink)',outline:'none',transition:'border-color .15s',colorScheme:theme==='dark'?'dark':'light'}} onFocus={e=>e.target.style.borderColor='var(--coral)'} onBlur={e=>e.target.style.borderColor='var(--border)'}>
                 <option value="">Pick state...</option>{STATES.map(s=><option key={s} value={s}>{SN[s]}{NT.has(s)?' · no income tax':''}  </option>)}
               </select>
             </div>
@@ -1089,7 +1303,7 @@ export default function App(){
           </div>
           {d.st&&NT.has(d.st)&&<div style={{background:'var(--green-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--green)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><Check size={11}/>Zero state income tax in {SN[d.st]}</div>}
           {d.st==='NY'&&<TR label="NYC resident?" sub="New York City adds 3.078%–3.876% on top of state tax" checked={d.nycResident||false} onChange={v=>upd('nycResident',v)}/>}
-          {d.st==='MD'&&<div style={{background:'var(--gold-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.73rem',color:'#78350F',display:'flex',gap:5,alignItems:'flex-start'}}><Info size={11} style={{flexShrink:0,marginTop:1}}/>Maryland has a mandatory county/local income tax (~2.5% avg) added to your estimate.</div>}
+          {d.st==='MD'&&<Tip tone="warn" compact>Maryland has a mandatory county/local income tax (~2.5% avg) added to your estimate.</Tip>}
         </DCard>
         <DCard id="card-hh" title="Household" sub="Family affects deductions and credits" Icon={Users} open={op.hh} onToggle={()=>tog('hh')} done={doneHH} optional>
           <TileG val={d.fs} onChange={v=>{upd('fs',v);if(v==='single')upd('sw2',0);}} cols={2} opts={[{v:'single',label:'Single',sub:'Filing solo',Icon:Briefcase},{v:'mfj',label:'Married jointly',sub:'Usually better',Icon:Users},{v:'hoh',label:'Head of household',sub:'Single parent',Icon:Users},{v:'mfs',label:'Married separately',Icon:Briefcase}]}/>
@@ -1098,12 +1312,12 @@ export default function App(){
           {d.kids>0&&<Bx><div style={{fontSize:'.75rem',fontWeight:700,color:'var(--ink2)',display:'flex',gap:4,alignItems:'center'}}><Gift size={11}/>More ways to lower taxes with kids:</div><TR label="Pay for childcare so you can work?" sub="Child & Dependent Care Credit — up to 20% back" checked={d.cc} onChange={v=>upd('cc',v)}/>{d.cc&&<Sld label="Annual childcare cost" val={d.ccAmt} min={0} max={25000} step={500} onChange={v=>upd('ccAmt',v)} tip="You may get up to 20% of qualifying costs as a credit — up to $6k for 2+ kids."/>}<TR label="Anyone in household in college?" sub="American Opportunity Credit — up to $2,500/yr" checked={d.edu>0} onChange={v=>upd('edu',v?8000:0)}/>{d.edu>0&&<Sld label="Tuition + fees paid this year" val={d.edu} min={0} max={20000} step={500} onChange={v=>upd('edu',v)} tip="AOC: up to $2,500/yr, first 4 years of college. Up to $1k is refundable!"/>}</Bx>}
         </DCard>
         <DCard id="card-sav" title="Retirement & Savings" sub="Lowers your taxable income before anything else" Icon={PiggyBank} open={op.sav} onToggle={()=>tog('sav')} done={doneSav} optional>
-          <Sld label="401(k) / 403(b) contributions" val={d.r401k} min={0} max={24500} step={250} onChange={v=>upd('r401k',v)} tip={d.r401k>0?`${fm(d.r401k)} comes directly off your taxable income. 2025 max: $23,500.`:undefined}/>
-          <Hint26 show={d.r401k>=23000}>The 2026 401(k) limit just increased to <strong>$24,500</strong> (+$1,000). If you're earning income right now, you can contribute up to that new limit this year.</Hint26>
-          <Sld label="Traditional IRA contributions" val={d.ira} min={0} max={7500} step={500} onChange={v=>upd('ira',v)} tip="2025 max: $7,000. Traditional IRA reduces taxes now — Roth doesn't."/>
-          <Hint26 show={d.ira>=6500}>For 2026 income, the IRA limit rises to <strong>$7,500</strong> (+$500). Good time to bump your contributions.</Hint26>
-          <Sld label="HSA (Health Savings Account)" val={d.hsa} min={0} max={8750} step={200} onChange={v=>upd('hsa',v)} tip="2025 max: $4,300 self · $8,550 family. Triple tax advantage."/>
-          <Hint26 show={d.hsa>=4000}>2026 HSA limits: <strong>$4,400</strong> individual · <strong>$8,750</strong> family. The earlier you max it, the more tax-free growth time you get.</Hint26>
+          <Sld label="401(k) / 403(b) contributions" val={d.r401k} min={0} max={Yprimary.r401kMax} step={250} onChange={v=>upd('r401k',v)} tip={d.r401k>0?`${fm(d.r401k)} comes directly off your taxable income. ${primaryYear} max: ${fm(Yprimary.r401kMax)}.`:undefined}/>
+          {Yplan&&<HintNext show={d.r401k>=Yprimary.r401kMax-500}>The {planningYear} 401(k) limit is <strong>{fm(Yplan.r401kMax)}</strong>{Yplan.r401kMax>Yprimary.r401kMax?` (+${fm(Yplan.r401kMax-Yprimary.r401kMax)})`:''}. If you're earning income right now, you can contribute up to that new limit this year.</HintNext>}
+          <Sld label="Traditional IRA contributions" val={d.ira} min={0} max={Yprimary.iraMax+500} step={500} onChange={v=>upd('ira',v)} tip={`${primaryYear} max: ${fm(Yprimary.iraMax)}. Traditional IRA reduces taxes now — Roth doesn't.`}/>
+          {Yplan&&<HintNext show={d.ira>=Yprimary.iraMax-500}>For {planningYear} income, the IRA limit is <strong>{fm(Yplan.iraMax)}</strong>{Yplan.iraMax>Yprimary.iraMax?` (+${fm(Yplan.iraMax-Yprimary.iraMax)})`:''}. Good time to bump your contributions.</HintNext>}
+          <Sld label="HSA (Health Savings Account)" val={d.hsa} min={0} max={Yprimary.hsaMax.family+200} step={200} onChange={v=>upd('hsa',v)} tip={`${primaryYear} max: ${fm(Yprimary.hsaMax.self)} self · ${fm(Yprimary.hsaMax.family)} family. Triple tax advantage.`}/>
+          {Yplan&&<HintNext show={d.hsa>=Yprimary.hsaMax.self-300}>{planningYear} HSA limits: <strong>{fm(Yplan.hsaMax.self)}</strong> individual · <strong>{fm(Yplan.hsaMax.family)}</strong> family. The earlier you max it, the more tax-free growth time you get.</HintNext>}
           <Sld label="Student loan interest paid" val={d.sloan} min={0} max={2500} step={100} onChange={v=>upd('sloan',v)}/>
           {(hasSE||hasBiz)&&<Sld label="Self-employed health insurance" val={d.seHI} min={0} max={200000} step={5000} onChange={v=>upd('seHI',v)} tip="100% deductible if you're self-employed!"/>}
         </DCard>
@@ -1124,7 +1338,7 @@ export default function App(){
               <Sld label="Gross 1099 / freelance income" val={d.seInc} min={0} max={5000000} step={5000} onChange={v=>upd('seInc',v)} tip={d.seInc>400?"Self-employed = you pay both sides of SS + Medicare (15.3% SE tax). Auto-calculated.":undefined}/>
               <Bx>
                 <div style={{fontSize:'.74rem',fontWeight:700,color:'var(--ink2)'}}>Core business expenses:</div>
-                <Sld label="Vehicle / mileage" val={d.seV} min={0} max={30000} step={200} onChange={v=>upd('seV',v)} tip="IRS mileage: $0.70/mile in 2025."/>
+                <Sld label="Vehicle / mileage" val={d.seV} min={0} max={30000} step={200} onChange={v=>upd('seV',v)} tip={`IRS mileage: $0.70/mile in ${primaryYear}.`}/>
                 <Sld label="Home office" val={d.seH} min={0} max={15000} step={200} onChange={v=>upd('seH',v)}/>
                 <Sld label="Equipment & software" val={d.seE} min={0} max={20000} step={200} onChange={v=>upd('seE',v)}/>
                 <Sld label="Other expenses" val={d.seO} min={0} max={20000} step={200} onChange={v=>upd('seO',v)}/>
@@ -1144,7 +1358,7 @@ export default function App(){
               <Sld label="Long-term capital gains" val={d.capGainLT||0} min={0} max={5000000} step={10000} onChange={v=>upd('capGainLT',v)} tip={d.capGainLT>0?"Long-term gains (assets held 12+ months) are taxed at 0%, 15%, or 20% — much lower than ordinary income rates. Your rate depends on your total taxable income.":undefined}/>
               <Sld label="Short-term capital gains" val={d.capGainST||0} min={0} max={3000000} step={10000} onChange={v=>upd('capGainST',v)} tip={d.capGainST>0?"Short-term gains (assets held under 12 months) are taxed as ordinary income — same as your salary.":undefined}/>
               {(d.capGainLT>0||d.capGainST>0)&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'8px 11px',fontSize:'.74rem',color:'var(--teal)',lineHeight:1.65}}>
-                {d.capGainLT>0&&<div><strong>Long-term rate:</strong> {(()=>{const ti=(d.w2||0)+(d.sw2||0)-Math.min(d.r401k||0,23500);return ti<47025?'0% — you qualify for the lowest bracket!':ti<518900?'15%':'20%';})()}</div>}
+                {d.capGainLT>0&&<div><strong>Long-term rate:</strong> {(()=>{const cap=Yprimary.r401kMax||23500;const ti=(d.w2||0)+(d.sw2||0)-Math.min(d.r401k||0,cap);return ti<47025?'0% — you qualify for the lowest bracket!':ti<518900?'15%':'20%';})()}</div>}
                 {d.capGainST>0&&<div style={{marginTop:d.capGainLT>0?4:0}}><strong>Short-term:</strong> Taxed as ordinary income at your marginal rate</div>}
               </div>}
             </div>}
@@ -1154,13 +1368,13 @@ export default function App(){
 
       {/* ── QUARTERLY ESTIMATED TAX — shown for SE, biz draws, retirees, anyone likely underpaying ── */}
       {needsQuarterly&&<div style={{marginBottom:'1rem'}}>
-        <div style={{background:'var(--white)',borderRadius:'var(--r-xl)',border:'1.5px solid #FDE68A',overflow:'hidden',boxShadow:'var(--sh-xs)'}}>
-          <div style={{padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,borderBottom:'1px solid #FEF5D4'}}>
-            <div style={{width:28,height:28,borderRadius:'50%',background:'#FEF5D4',border:'1.5px solid #FDE68A',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Calculator size={13} style={{color:'var(--gold)'}}/></div>
+        <div style={{background:'var(--white)',borderRadius:'var(--r-xl)',border:'1px solid var(--border)',overflow:'hidden',boxShadow:'var(--sh-xs)'}}>
+          <div style={{padding:'1rem 1.125rem',display:'flex',alignItems:'center',gap:9,borderBottom:'1px solid var(--border)'}}>
+            <div style={{width:28,height:28,borderRadius:'50%',background:'var(--coral-lt)',border:'1px solid var(--coral-md)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><Calculator size={13} style={{color:'var(--coral)'}}/></div>
             <div style={{flex:1}}>
-              <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--gold)',display:'flex',alignItems:'center',gap:6}}>
+              <div style={{fontWeight:700,fontSize:'.875rem',color:'var(--ink)',display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
                 Quarterly Estimated Taxes
-                <span style={{fontSize:'.62rem',background:'#FEF5D4',color:'var(--gold)',borderRadius:100,padding:'1px 7px',fontWeight:700,border:'1px solid #FDE68A'}}>
+                <span style={{fontSize:'.62rem',background:'var(--surface-2)',color:'var(--ink2)',borderRadius:100,padding:'2px 8px',fontWeight:700,border:'1px solid var(--border)'}}>
                   {d.wt.includes('se')?'Freelance / 1099':d.wt.includes('biz')&&!d.bizSal?'Business owner':d.wt.includes('ret')?'Retiree':'Likely applies to you'}
                 </span>
               </div>
@@ -1168,57 +1382,64 @@ export default function App(){
             </div>
           </div>
           <div style={{padding:'1rem 1.125rem',display:'flex',flexDirection:'column',gap:'1rem'}}>
-            <div style={{fontSize:'.8rem',color:'var(--ink2)',lineHeight:1.7,background:'var(--bg)',borderRadius:'var(--r)',padding:'10px 12px'}}>
-              <strong>Why quarterly?</strong> The US tax system is pay-as-you-go. W-2 employees have taxes withheld automatically each paycheck. But if you have income without withholding — from freelancing, a business draw, retirement distributions, or investments — the IRS expects you to pay taxes in <strong>4 installments</strong> throughout the year. Miss them and you'll owe a penalty even if you pay in full when you file.
+            <div style={{fontSize:'.8rem',color:'var(--ink2)',lineHeight:1.7,background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'10px 12px'}}>
+              <strong style={{color:'var(--ink)'}}>Why quarterly?</strong> The US tax system is pay-as-you-go. W-2 employees have taxes withheld automatically each paycheck. But if you have income without withholding — from freelancing, a business draw, retirement distributions, or investments — the IRS expects you to pay taxes in <strong>4 installments</strong> throughout the year. Miss them and you'll owe a penalty even if you pay in full when you file.
             </div>
             {/* Who owes — context-aware explanation */}
-            {d.wt.includes('se')&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
-              <strong>Self-employed:</strong> No employer is withholding taxes for you. You owe self-employment tax (15.3%) + income tax on your net profit. The IRS expects quarterly payments or you'll face an ~8% annualized underpayment penalty.
-            </div>}
-            {d.wt.includes('biz')&&!d.bizSal&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
-              <strong>Business owner (draw):</strong> Owner's draws aren't subject to withholding. Your business profit flows to your personal return — you're responsible for quarterly payments on that income.
-            </div>}
-            {d.wt.includes('ret')&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
-              <strong>Retirees:</strong> Up to 85% of Social Security may be taxable. Pension and IRA withdrawals are taxable. If your withholding doesn't cover your tax bill, you'll owe estimated payments — or you can ask your plan administrator to increase withholding.
-            </div>}
-            {!d.wt.includes('se')&&!d.wt.includes('biz')&&!d.wt.includes('ret')&&calc.res>1000&&<div style={{fontSize:'.77rem',color:'#78350F',background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',lineHeight:1.65}}>
-              <strong>Heads up:</strong> Your current estimate shows you may owe {fm(calc.res)} at filing. If your withholding isn't covering at least 90% of your tax bill, you may need quarterly payments — or owe a penalty on top of the balance due.
-            </div>}
-            {/* Quarter grid */}
+            {d.wt.includes('se')&&<Tip tone="accent" title="Self-employed:">No employer is withholding taxes for you. You owe self-employment tax (15.3%) + income tax on your net profit. The IRS expects quarterly payments or you'll face an ~8% annualized underpayment penalty.</Tip>}
+            {d.wt.includes('biz')&&!d.bizSal&&<Tip tone="accent" title="Business owner (draw):">Owner's draws aren't subject to withholding. Your business profit flows to your personal return — you're responsible for quarterly payments on that income.</Tip>}
+            {d.wt.includes('ret')&&<Tip tone="accent" title="Retirees:">Up to 85% of Social Security may be taxable. Pension and IRA withdrawals are taxable. If your withholding doesn't cover your tax bill, you'll owe estimated payments — or you can ask your plan administrator to increase withholding.</Tip>}
+            {!d.wt.includes('se')&&!d.wt.includes('biz')&&!d.wt.includes('ret')&&calc.res>1000&&<Tip tone="accent" title="Heads up:">Your current estimate shows you may owe {fm(calc.res)} at filing. If your withholding isn't covering at least 90% of your tax bill, you may need quarterly payments — or owe a penalty on top of the balance due.</Tip>}
+            {/* Quarter grid — dynamic for primaryYear */}
             <div>
-              <div style={{fontSize:'.75rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>2026 payment schedule:</div>
+              <div style={{fontSize:'.75rem',fontWeight:700,color:'var(--ink2)',marginBottom:7}}>{primaryYear} payment schedule:</div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:6}}>
-                {[['Q1','Jan 1 – Mar 31','Apr 15, 2026'],['Q2','Apr 1 – May 31','Jun 16, 2026'],['Q3','Jun 1 – Aug 31','Sep 15, 2026'],['Q4','Sep 1 – Dec 31','Jan 15, 2027']].map(([q,period,due],i)=>{
-                  const dueDates=[new Date('2026-04-15'),new Date('2026-06-16'),new Date('2026-09-15'),new Date('2027-01-15')];
+                {(()=>{
+                  const y=primaryYear;
+                  const fmt=dt=>dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+                  return [
+                    ['Q1',`Jan 1 – Mar 31, ${y}`,fmt(new Date(y,3,15))],
+                    ['Q2',`Apr 1 – May 31, ${y}`,fmt(new Date(y,5,15))],
+                    ['Q3',`Jun 1 – Aug 31, ${y}`,fmt(new Date(y,8,15))],
+                    ['Q4',`Sep 1 – Dec 31, ${y}`,fmt(new Date(y+1,0,15))],
+                  ];
+                })().map(([q,period,due],i)=>{
+                  const y=primaryYear;
+                  const dueDates=[new Date(y,3,15),new Date(y,5,15),new Date(y,8,15),new Date(y+1,0,15)];
                   const now=new Date();
                   const isPast=dueDates[i]<now;
                   const isCurrent=!isPast&&(i===0||dueDates[i-1]<now);
                   return(
-                    <div key={q} style={{background:isPast?'var(--bg)':isCurrent?'#FFFBEB':'var(--white)',border:`1px solid ${isCurrent?'#FDE68A':'var(--border)'}`,borderRadius:'var(--r)',padding:'8px 10px'}}>
+                    <div key={q} style={{
+                      background:'var(--surface-2)',
+                      border:'1px solid var(--border)',
+                      borderRadius:'var(--r)',
+                      padding:'8px 10px',
+                      opacity:isPast?0.72:1,
+                      boxShadow:isCurrent?'inset 3px 0 0 var(--coral)':'none',
+                    }}>
                       <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:3}}>
-                        <span style={{fontWeight:800,fontSize:'.78rem',color:isPast?'var(--ink3)':isCurrent?'var(--gold)':'var(--ink)'}}>{q}</span>
-                        {isCurrent&&<span style={{fontSize:'.56rem',background:'#FDE68A',color:'#78350F',borderRadius:100,padding:'1px 5px',fontWeight:700}}>Current</span>}
-                        {isPast&&<span style={{fontSize:'.56rem',color:'var(--ink3)',fontWeight:500}}>Past</span>}
+                        <span style={{fontWeight:800,fontSize:'.78rem',color:isPast?'var(--ink3)':'var(--ink)'}}>{q}</span>
+                        {isCurrent&&<span style={{fontSize:'.56rem',background:'var(--surface)',color:'var(--coral)',border:'1px solid var(--border)',borderRadius:100,padding:'2px 6px',fontWeight:700,letterSpacing:'.02em',textTransform:'uppercase'}}>Current</span>}
+                        {isPast&&<span style={{fontSize:'.56rem',color:'var(--ink3)',fontWeight:500,textTransform:'uppercase',letterSpacing:'.02em'}}>Past</span>}
                       </div>
                       <div style={{fontSize:'.66rem',color:'var(--ink3)',lineHeight:1.4,marginBottom:2}}>{period}</div>
-                      <div style={{fontSize:'.68rem',fontWeight:600,color:isPast?'var(--ink3)':isCurrent?'var(--gold)':'var(--ink2)'}}>Due {due}</div>
+                      <div style={{fontSize:'.68rem',fontWeight:600,color:isPast?'var(--ink3)':'var(--ink2)'}}>Due {due}</div>
                     </div>
                   );
                 })}
               </div>
             </div>
             {/* Safe harbor rule */}
-            <div style={{background:'var(--bg)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',fontSize:'.75rem',color:'var(--ink2)',lineHeight:1.7}}>
+            <div style={{background:'var(--surface-2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'10px 12px',fontSize:'.75rem',color:'var(--ink2)',lineHeight:1.7}}>
               <strong style={{color:'var(--ink)'}}>Safe harbor rule (avoid penalties):</strong> Pay at least <strong>90%</strong> of this year's tax, OR <strong>100% of last year's total tax</strong> (110% if your income exceeds $150k). Whichever is smaller — hit that and you won't be penalized, even if you owe more at filing.
             </div>
             {/* Dynamic payment suggestion */}
-            {calc.tot>500&&<div style={{background:'#FFFBEB',border:'1px solid #FDE68A',borderRadius:'var(--r)',padding:'9px 12px',fontSize:'.75rem',color:'#78350F',lineHeight:1.7}}>
-              <strong>Rough quarterly payment:</strong> Based on your estimate, aim for about <strong>{fm(Math.round(calc.tot/4))}/quarter</strong> to cover your federal tax bill. This is a ballpark — use IRS Form 1040-ES for the exact amount.
-            </div>}
+            {calc.tot>500&&<Tip tone="accent" title="Rough quarterly payment:">Based on your estimate, aim for about <strong style={{color:'var(--ink)'}}>{fm(Math.round(calc.tot/4))}/quarter</strong> to cover your federal tax bill. This is a ballpark — use IRS Form 1040-ES for the exact amount.</Tip>}
             {/* Payments made slider */}
             <Sld label="Estimated quarterly payments made so far this year" val={d.estP} min={0} max={2000000} step={5000} onChange={v=>upd('estP',v)} tip={d.estP>0?"Payments already made reduce your balance due dollar-for-dollar and are reflected in your estimate above.":calc.tot>1000?"No payments entered yet — if you haven't paid any, the full amount may be due at filing plus an underpayment penalty (~8% annualized on the shortfall).":undefined}/>
             <div style={{fontSize:'.69rem',color:'var(--ink3)',lineHeight:1.6}}>
-              Pay online at <strong>irs.gov/payments</strong> (IRS Direct Pay — free) or use the IRS2Go app. Select "Estimated Tax" and "2026" as the tax year.
+              Pay online at <strong>irs.gov/payments</strong> (IRS Direct Pay — free) or use the IRS2Go app. Select "Estimated Tax" and "{primaryYear}" as the tax year.
             </div>
           </div>
         </div>
@@ -1233,30 +1454,30 @@ export default function App(){
           </div>
           <TR label="Do you own a home?" checked={d.home} onChange={v=>{upd('home',v);if(!v){upd('mort',false);upd('mortInt',0);}}}/>
           {d.home&&<Bx><TR label="Have a mortgage?" checked={d.mort} onChange={v=>{upd('mort',v);if(!v)upd('mortInt',0);}}/>{d.mort&&<Sld label="Mortgage interest paid" val={d.mortInt} min={0} max={100000} step={500} onChange={v=>upd('mortInt',v)} tip="Check your 1098 from your lender."/>}</Bx>}
-          <Sld label="State & local taxes (SALT) paid" val={d.salt} min={0} max={40000} step={500} onChange={v=>upd('salt',v)} tip="Property + state income taxes. 2025 SALT cap: $40,000."/>
+          <Sld label="State & local taxes (SALT) paid" val={d.salt} min={0} max={Yprimary.saltCap} step={500} onChange={v=>upd('salt',v)} tip={`Property + state income taxes. ${primaryYear} SALT cap: ${fm(Yprimary.saltCap)}.`}/>
           <Sld label="Charitable donations" val={d.charity} min={0} max={2000000} step={5000} onChange={v=>upd('charity',v)}/>
           {calc.useItem&&<div style={{background:'var(--teal-lt)',borderRadius:'var(--r)',padding:'7px 10px',fontSize:'.74rem',color:'var(--teal)',fontWeight:600,display:'flex',gap:4,alignItems:'center'}}><TrendingUp size={11}/>Itemizing saves {fm(calc.item-calc.sd)} more — auto-applied.</div>}
         </DCard>
 
         {/* INLINE RESULT + REQUIRED FIELDS CALLOUT */}
-        <div style={{background:isR?'linear-gradient(135deg,#F0FDF4,#D3F0EB)':isO&&amt>1500?'linear-gradient(135deg,#FEF2F2,#FEE2E2)':'linear-gradient(135deg,#FEFCE8,#FEF5D4)',borderRadius:'var(--r-xl)',padding:'1.5rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',border:`1.5px solid ${isR?'#86EFAC':isO&&amt>1500?'#FECACA':'#FDE68A'}`,minHeight:220,boxShadow:'var(--sh-xs)'}}>
+        <div style={{background:isR?'linear-gradient(135deg,var(--green-lt),var(--teal-lt))':isO&&amt>1500?'linear-gradient(135deg,var(--red-lt),var(--red-lt))':'linear-gradient(135deg,var(--gold-lt),var(--gold-lt))',borderRadius:'var(--r-xl)',padding:'1.5rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',border:`1.5px solid ${isR?'var(--green-border)':isO&&amt>1500?'var(--red-border)':'var(--gold-border)'}`,minHeight:220,boxShadow:'var(--sh-xs)'}}>
           {calc.gross>0?(
             <>{/* has estimate */}
               <div style={{fontSize:'.62rem',fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em',color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',marginBottom:4}}>{isR?'Estimated Refund':isO?'Estimated Balance Due':'≈ Break Even'}</div>
               <div style={{display:'flex',alignItems:'flex-start',justifyContent:'center',gap:1}}>
                 <span style={{fontSize:'1.1rem',fontWeight:800,color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',opacity:.45,marginTop:4,fontFamily:'var(--f)'}}>~</span>
-                <div style={{fontFamily:'var(--fs)',fontSize:'clamp(2rem,5vw,2.875rem)',fontWeight:400,color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',lineHeight:1}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
+                <div className="num-display" style={{fontSize:'clamp(2rem,5vw,2.875rem)',color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)'}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
               </div>
-              <div style={{display:'inline-flex',alignItems:'center',gap:4,background:'rgba(0,0,0,.06)',borderRadius:100,padding:'2px 9px',marginTop:5,fontSize:'.69rem',color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',fontWeight:600}}>Range: {fm(amt*.87,true)} – {fm(amt*1.13,true)}</div>
+              <div style={{display:'inline-flex',alignItems:'center',gap:4,background:'var(--overlay-strong)',borderRadius:100,padding:'2px 9px',marginTop:5,fontSize:'.69rem',color:isR?'var(--teal)':isO&&amt>1500?'var(--red)':'var(--gold)',fontWeight:600}}>Range: {fm(amt*.87,true)} – {fm(amt*1.13,true)}</div>
               <Chip color={cx.color} bg={cx.bg} style={{marginTop:7}}>{cx.label} complexity</Chip>
               <div style={{fontSize:'.69rem',color:'var(--ink3)',marginTop:4,marginBottom:8}}>{cx.desc}</div>
               <button onClick={()=>setDrawerOpen(true)} style={{marginTop:4,background:'var(--white)',border:'1.5px solid var(--border)',borderRadius:'var(--r-lg)',padding:'8px 14px',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:5,fontSize:'.78rem',fontWeight:700,color:'var(--ink2)',width:'100%',transition:'all .16s'}} onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--coral)';e.currentTarget.style.color='var(--coral)';e.currentTarget.style.background='var(--coral-lt)';}} onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.color='var(--ink2)';e.currentTarget.style.background='var(--white)';}}>
                 <TrendingUp size={12}/>See full breakdown &amp; filing options
               </button>
-              {bigDiff&&calc26&&(
-                <div style={{marginTop:8,padding:'6px 10px',background:'#EFF6FF',borderRadius:'var(--r)',border:'1px solid #BFDBFE',fontSize:'.68rem',color:'#1E40AF',display:'flex',gap:4,alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
+              {bigDiff&&calcPlan&&(
+                <div style={{marginTop:8,padding:'6px 10px',background:'var(--info-lt)',borderRadius:'var(--r)',border:'1px solid var(--info-border)',fontSize:'.68rem',color:'var(--info-fg)',display:'flex',gap:4,alignItems:'center',justifyContent:'center',flexWrap:'wrap'}}>
                   <TrendingUp size={10} style={{flexShrink:0}}/>
-                  <span><strong>2026 planning estimate: {yearDiff<0?`${fm(Math.abs(calc26.res))} refund`:`${fm(Math.abs(calc26.res))} owed`}</strong> — {yearDiff<0?`${fm(Math.abs(yearDiff))} better than 2025`:`${fm(Math.abs(yearDiff))} more than 2025`}</span>
+                  <span><strong>{planningYear} planning estimate: {yearDiff<0?`${fm(Math.abs(calcPlan.res))} refund`:`${fm(Math.abs(calcPlan.res))} owed`}</strong> — {yearDiff<0?`${fm(Math.abs(yearDiff))} better than ${primaryYear}`:`${fm(Math.abs(yearDiff))} more than ${primaryYear}`}</span>
                 </div>
               )}
             </>
@@ -1270,7 +1491,7 @@ export default function App(){
                   <div style={{fontSize:'.74rem',color:'var(--ink2)',marginBottom:6,fontWeight:600,display:'flex',gap:4,alignItems:'center',justifyContent:'center'}}><AlertCircle size={12} style={{color:'var(--coral)'}}/>To see your estimate, fill in:</div>
                   <div style={{display:'flex',gap:5,flexWrap:'wrap',justifyContent:'center'}}>
                     {missingItems.map(f=>(
-                      <a key={f.id} href={`#${f.id}`} onClick={e=>{e.preventDefault();document.getElementById(f.id)?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>setOp(o=>({...o,[f.id.replace('card-','')]:true})),300);}} style={{display:'inline-flex',alignItems:'center',gap:4,background:'white',border:'1.5px solid var(--coral-md)',borderRadius:100,padding:'3px 10px',fontSize:'.72rem',fontWeight:600,color:'var(--coral)',textDecoration:'none',cursor:'pointer',transition:'all .13s'}} onMouseEnter={e=>e.currentTarget.style.background='var(--coral-lt)'} onMouseLeave={e=>e.currentTarget.style.background='white'}>
+                      <a key={f.id} href={`#${f.id}`} onClick={e=>{e.preventDefault();document.getElementById(f.id)?.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>setOp(o=>({...o,[f.id.replace('card-','')]:true})),300);}} style={{display:'inline-flex',alignItems:'center',gap:4,background:'var(--white)',border:'1.5px solid var(--coral-md)',borderRadius:100,padding:'3px 10px',fontSize:'.72rem',fontWeight:600,color:'var(--coral)',textDecoration:'none',cursor:'pointer',transition:'all .13s'}} onMouseEnter={e=>e.currentTarget.style.background='var(--coral-lt)'} onMouseLeave={e=>e.currentTarget.style.background='var(--white)'}>
                         <ArrowRight size={9}/>{f.label}
                       </a>
                     ))}
@@ -1286,19 +1507,19 @@ export default function App(){
     </div>}
 
     {/* EMPTY PRE-START STATE */}
-    {!started&&<div style={{maxWidth:500,margin:'3rem auto',padding:'0 1.5rem',textAlign:'center'}}><div style={{background:'var(--white)',borderRadius:'var(--r-xl)',padding:'2.5rem',boxShadow:'var(--sh)',border:'1.5px solid var(--border)'}}><Target size={30} style={{color:'var(--coral)',marginBottom:'1rem'}}/><div style={{fontWeight:700,fontSize:'1.125rem',marginBottom:'.5rem'}}>Ready when you are</div><div style={{fontSize:'.875rem',color:'var(--ink2)',lineHeight:1.7,marginBottom:'1.5rem'}}>Pick a persona above to explore a demo, or click below to enter your own numbers. Takes about 4 minutes.</div><button onClick={startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'inline-flex',alignItems:'center',gap:7,transition:'all .17s',boxShadow:'0 4px 18px rgba(224,78,26,.32)'}} onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 7px 28px rgba(224,78,26,.44)';}} onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='0 4px 18px rgba(224,78,26,.32)';}}>
+    {!started&&<div style={{maxWidth:500,margin:'3rem auto',padding:'0 1.5rem',textAlign:'center'}}><div style={{background:'var(--white)',borderRadius:'var(--r-xl)',padding:'2.5rem',boxShadow:'var(--sh)',border:'1.5px solid var(--border)'}}><div style={{display:'flex',justifyContent:'center',marginBottom:'1rem'}}><LogoMark size={36}/></div><div style={{fontWeight:700,fontSize:'1.125rem',marginBottom:'.5rem'}}>Ready when you are</div><div style={{fontSize:'.875rem',color:'var(--ink2)',lineHeight:1.7,marginBottom:'1.5rem'}}>Pick a persona above to explore a demo, or click below to enter your own numbers. Takes about 4 minutes.</div><button onClick={startOwn} style={{background:'var(--coral)',color:'white',border:'none',borderRadius:100,padding:'12px 26px',fontWeight:700,fontSize:'.9375rem',cursor:'pointer',display:'inline-flex',alignItems:'center',gap:8,transition:'box-shadow .17s',boxShadow:'0 4px 18px rgba(61,90,254,.32)'}} onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 6px 22px rgba(61,90,254,.44)';}} onMouseLeave={e=>{e.currentTarget.style.boxShadow='0 4px 18px rgba(61,90,254,.32)';}}>
       <Calculator size={15}/>Run my own estimate
     </button></div></div>}
 
     {/* STICKY BAR + SCRIM + SCROLL-LINKED PEEK */}
     {calc.gross>0&&<div style={{position:'fixed',bottom:0,left:0,right:0,zIndex:200}}>
       {/* Background scrim when drawer is open */}
-      {(drawerOpen&&!drawerClosing)&&<div onClick={closeDrawer} style={{position:'fixed',inset:0,background:'rgba(23,20,14,.45)',zIndex:-1,backdropFilter:'blur(2px)',animation:'fadeIn .25s ease'}}/>}
+      {(drawerOpen&&!drawerClosing)&&<div onClick={closeDrawer} style={{position:'fixed',inset:0,background:'var(--scrim)',zIndex:-1,backdropFilter:'blur(2px)',animation:'fadeIn .25s ease'}}/>}
       {/* Peek preview bar — animates in with scroll, disappears when drawer opens */}
       {!drawerOpen&&drawerPeek>0&&drawerPeek<1&&(
         <div style={{position:'absolute',bottom:'100%',left:0,right:0,height:4,background:`linear-gradient(90deg, var(--coral) ${drawerPeek*100}%, transparent ${drawerPeek*100}%)`,opacity:drawerPeek}}/>
       )}
-      {(!drawerOpen||drawerClosing)&&<div style={{background:'var(--ink)',boxShadow:'var(--sh-up)',transform:'translateY(0)',opacity:1}}>
+      {(!drawerOpen||drawerClosing)&&<div style={{background:'var(--inv-bg)',boxShadow:'var(--sh-up)',transform:'translateY(0)',opacity:1}}>
         <div style={{maxWidth:1100,margin:'0 auto',padding:'10px 16px 10px',display:'flex',flexDirection:'column',gap:8}}>
 
           {/* Row 1: big number left | top bracket | eff rate | complexity — never wraps */}
@@ -1306,12 +1527,12 @@ export default function App(){
 
             {/* Left: primary result */}
             <div style={{display:'flex',alignItems:'baseline',gap:5,flexShrink:0}}>
-              <div style={{fontFamily:'var(--fs)',fontSize:'1.5rem',fontWeight:600,color:isR?'#5EEAD4':isO&&amt>3000?'#FCA5A5':'#FCD34D',lineHeight:1,whiteSpace:'nowrap'}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
+              <div className="num-display" style={{fontSize:'1.5rem',color:isR?'var(--sum-r)':isO&&amt>3000?'var(--sum-b)':'var(--sum-o)'}}>{isR&&'+'}{isO&&'−'}{fm(amt)}</div>
               <div style={{fontSize:'.65rem',fontWeight:700,color:'rgba(255,255,255,.55)',textTransform:'uppercase',letterSpacing:'.06em',whiteSpace:'nowrap'}}>{isR?'refund':isO?'owed':'~even'}</div>
             </div>
 
-            {/* Right: 3 stats — flex-shrink:0 on each, no wrap possible */}
-            <div style={{display:'flex',alignItems:'center',gap:12,flexShrink:0}}>
+            {/* Right: 3 stats — hidden on mobile via .sum-stats */}
+            <div className="sum-stats" style={{display:'flex',alignItems:'center',gap:12,flexShrink:0}}>
               <div style={{textAlign:'right'}}>
                 <div style={{fontSize:'.55rem',fontWeight:700,color:'rgba(255,255,255,.5)',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:3}}>Top bracket</div>
                 <div style={{fontSize:'.92rem',fontWeight:700,color:'rgba(255,255,255,.72)'}}>{Math.round(calc.mg*100)}%</div>
@@ -1337,22 +1558,22 @@ export default function App(){
             {started&&<button onClick={reset} style={{flexShrink:0,background:'rgba(255,255,255,.07)',border:'1px solid rgba(255,255,255,.12)',borderRadius:'var(--r)',padding:'11px 13px',cursor:'pointer',display:'flex',alignItems:'center',gap:5,color:'rgba(255,255,255,.55)',fontSize:'.8rem',fontWeight:600,transition:'all .15s',whiteSpace:'nowrap'}} onMouseEnter={e=>{e.currentTarget.style.background='rgba(255,255,255,.13)';e.currentTarget.style.color='white';}} onMouseLeave={e=>{e.currentTarget.style.background='rgba(255,255,255,.07)';e.currentTarget.style.color='rgba(255,255,255,.55)';}}>
               <RefreshCw size={12}/>Reset
             </button>}
-            <button onClick={()=>{setDrawerOpen(true);track('full_breakdown_opened',{estimated_result:isR?'refund':isO?'owed':'even',amount:Math.round(amt),complexity:cx.level});}} style={{flex:1,background:'var(--coral)',color:'white',border:'none',borderRadius:'var(--r)',padding:'12px',fontWeight:700,fontSize:'.9rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,boxShadow:'0 2px 8px rgba(224,78,26,.4)',transition:'opacity .14s'}} onMouseEnter={e=>e.currentTarget.style.opacity='.88'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
-              <TrendingUp size={14}/>Full breakdown + filing options ↑
+            <button onClick={()=>{setDrawerOpen(true);track('full_breakdown_opened',{estimated_result:isR?'refund':isO?'owed':'even',amount:Math.round(amt),complexity:cx.level});}} style={{flex:1,background:'var(--coral)',color:'white',border:'none',borderRadius:'var(--r)',padding:'12px',fontWeight:700,fontSize:'.9rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6,boxShadow:'0 2px 8px rgba(61,90,254,.4)',transition:'opacity .14s'}} onMouseEnter={e=>e.currentTarget.style.opacity='.88'} onMouseLeave={e=>e.currentTarget.style.opacity='1'}>
+              <TrendingUp size={14}/><span className="sum-cta-full">Full breakdown + filing options ↑</span><span className="sum-cta-short">Full breakdown ↑</span>
             </button>
           </div>
 
         </div>
       </div>}
-      {(drawerOpen||drawerClosing)&&<ResultsDrawer calc={calc} calc26={calc26} yearDiff={yearDiff} bigDiff={bigDiff} data={d} onClose={closeDrawer} closing={drawerClosing}/>}
+      {(drawerOpen||drawerClosing)&&<ResultsDrawer calc={calc} calcPlan={calcPlan} yearDiff={yearDiff} bigDiff={bigDiff} primaryYear={primaryYear} planningYear={planningYear} dualMode={dualMode} data={d} onClose={closeDrawer} closing={drawerClosing}/>}
     </div>}
 
     {/* ── LEGAL FOOTER ── */}
-    <footer style={{background:'var(--ink)',color:'rgba(255,255,255,.55)',marginTop:'4rem',padding:'3rem 1.5rem 2.5rem'}}>
+    <footer style={{background:'var(--inv-bg)',color:'var(--inv-fg-dimmer)',marginTop:'4rem',padding:'3rem 1.5rem 2.5rem'}}>
       <div style={{maxWidth:960,margin:'0 auto'}}>
         {/* Logo row */}
-        <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:'1.5rem'}}>
-          <Target size={16} style={{color:'var(--coral)'}}/><span style={{fontWeight:800,fontSize:'.9375rem',color:'white'}}>TaxScope</span>
+        <div style={{display:'flex',alignItems:'center',gap:9,marginBottom:'1.5rem'}}>
+          <LogoMark size={22} inverse/><span style={{fontWeight:800,fontSize:'.9375rem',color:'white'}}>TaxScope</span>
           <span style={{fontSize:'.65rem',padding:'2px 7px',background:'rgba(255,255,255,.1)',borderRadius:100,color:'rgba(255,255,255,.5)'}}>Free Tax Estimator</span>
         </div>
 
@@ -1380,7 +1601,7 @@ export default function App(){
             <div style={{fontWeight:700,fontSize:'.8rem',color:'rgba(255,255,255,.75)',marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
               <TrendingUp size={13} style={{color:'var(--coral)'}}/>Tax Law Changes Frequently
             </div>
-            <p style={{fontSize:'.75rem',lineHeight:1.7}}>Tax laws, rates, credits, and deductions change regularly. This tool reflects our best understanding of 2025 federal tax law (including the One Big Beautiful Bill Act signed July 4, 2025) and selected state rates as of early 2026. Always verify current rules with the IRS or a licensed tax professional.</p>
+            <p style={{fontSize:'.75rem',lineHeight:1.7}}>Tax laws, rates, credits, and deductions change regularly. This tool reflects our best understanding of {primaryYear} federal tax law and the latest published IRS guidance. Always verify current rules with the IRS or a licensed tax professional.</p>
           </div>
           <div>
             <div style={{fontWeight:700,fontSize:'.8rem',color:'rgba(255,255,255,.75)',marginBottom:6,display:'flex',alignItems:'center',gap:5}}>
@@ -1406,7 +1627,7 @@ export default function App(){
         {/* Bottom bar */}
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'1rem',paddingTop:'1rem',borderTop:'1px solid rgba(255,255,255,.08)'}}>
           <div style={{fontSize:'.7rem',color:'rgba(255,255,255,.3)'}}>
-            © {new Date().getFullYear()} TaxScope · Free Tax Estimator · Tax Years 2025 & 2026 · Not affiliated with the IRS
+            © {new Date().getFullYear()} TaxScope · Free Tax Estimator · Tax Year{dualMode?'s':''} {dualMode?`${primaryYear} & ${planningYear}`:primaryYear} · Not affiliated with the IRS
           </div>
           <div style={{display:'flex',gap:'1.25rem',fontSize:'.7rem'}}>
             <a href="https://www.irs.gov" target="_blank" rel="noopener noreferrer" style={{color:'rgba(255,255,255,.35)',textDecoration:'none',transition:'color .14s'}} onMouseEnter={e=>e.currentTarget.style.color='rgba(255,255,255,.7)'} onMouseLeave={e=>e.currentTarget.style.color='rgba(255,255,255,.35)'}>IRS.gov</a>
@@ -1418,6 +1639,18 @@ export default function App(){
       </div>
     </footer>
 
-    <style>{`@keyframes barIn{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}@keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes drawerDown{from{transform:translateY(0)}to{transform:translateY(100%)}}@media(max-width:580px){nav>div:last-child>span{display:none!important}}`}</style>
+    <style>{`
+      @keyframes barIn{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes drawerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+      @keyframes drawerDown{from{transform:translateY(0)}to{transform:translateY(100%)}}
+      .sum-cta-short{display:none}
+      .sum-cta-full{display:inline}
+      @media(max-width:580px){nav>div:last-child>span{display:none!important}}
+      @media(max-width:640px){
+        .sum-stats{display:none!important}
+        .sum-cta-short{display:inline}
+        .sum-cta-full{display:none}
+      }
+    `}</style>
   </div>);
 }

@@ -61,7 +61,7 @@ Usually takes 5–10 minutes to verify and merge.
 
 ### What it does
 
-Congress occasionally passes mid-year tax legislation (example: the One Big Beautiful Bill was signed July 4, 2025 — unexpected). This workflow:
+Congress occasionally passes mid-year tax legislation that changes brackets, credits, or deductions with little notice. This workflow:
 
 1. Asks Claude to search for any significant tax law changes in the last 60 days
 2. If something significant is found, **automatically opens a GitHub Issue** with details and a recommended action
